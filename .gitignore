@@ -1,0 +1,8 @@
+/.idea
+# aws-sdk-php-silex.iml
+
+composer.lock
+composer.json
+# composer.phar
+# phpunit.xml
+vendor
