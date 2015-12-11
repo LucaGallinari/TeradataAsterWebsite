@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin</title>
+</head>
+<body>
+    <h1>{{ msg }}</h1>
+    <p>Token: {{ token }}</p>
+    <p>Logged: {{ logged }}</p>
+    <ul>
+        <li><a href="{{ path('admin_aster_test') }}" target="_blank">Test Aster Cluser connection</a></li>
+        <li><a href="{{ path('admin_logout') }}">Logout</a></li>
+    </ul>
+</body>
+</html>

@@ -13,32 +13,73 @@
 
 require_once __DIR__.'/../vendor/autoload.php';
 
+use Controller\AdminController;
+use Symfony\Component\Security\Core\Encoder\MessageDigestPasswordEncoder;
+use Silex\Provider;
+
 $app = new Silex\Application();
+$__PROJDIR__ = __DIR__."/../src";
 
 // options
 $app['debug'] = "true";
 
-// routing
-$app->get('/', function () use ($app) {
+$app->register(new Silex\Provider\SessionServiceProvider());
+$app->register(new Silex\Provider\UrlGeneratorServiceProvider());
+$app->register(new Silex\Provider\ServiceControllerServiceProvider());
 
-    // Replace the value of these variables with your own data
-    $driver     = '{AsterDriver}';
-    $server     = '192.168.100.100';
-    $database   = 'beehive';
-    $user       = 'beehive';
-    $pass       = 'beehive';
+// Doctrine
+$app->register(new Provider\DoctrineServiceProvider(), array(
+    'db.options' => array(
+        'driver'    => 'pdo_mysql',
+        'host'      => 'localhost',
+        // 'port'   => '24',
+        'dbname'    => 'aster_website',
+        'user'      => 'phpmyadmin',
+        'password'  => 'phpmyadmin',
+    ),
+));
 
-    // No changes needed from now on
-    $connection_string = "Driver=$driver;Server=$server;Database=$database";
-    // $connection_string = "DSN=testdsn";
-    $conn = odbc_connect($connection_string,$user,$pass);
+// Security
+$app->register(new Provider\SecurityServiceProvider(), array(
+    'security.firewalls' => array(
+        'admin' => array(
+            'pattern' => '^/admin/',
+            'form' => array(
+                'login_path' => '/',
+                'check_path' => '/admin/login_check',
+                'default_target_path' => '/admin',
+            ),
+            'logout' => array(
+                'logout_path' => '/admin/logout',
+                'invalidate_session' => true
+            ),
+            'users' => $app->share(function () use ($app) {
+                return new Repository\UserProvider($app['db']);
+            }),
+        ),
+    ),
+    'security.encoder.digest' => $app->share(function() {
+        // return new Symfony\Component\Security\Core\Encoder\BCryptPasswordEncoder(12);
+        return new MessageDigestPasswordEncoder('sha1', false, 1);
+    })
+));
 
-    if ($conn) {
-        echo "Connection established.";
-    } else{
-        die("Connection could not be established.");
-    }
+// Twig
+$app->register(new Provider\TwigServiceProvider(), array(
+    'twig.path' => $__PROJDIR__.'/Views',
+));
 
+
+// Routing
+$app->get('/', 'Controller\\LoginController::indexAction')->bind('login');
+$app->get('/admin', 'Controller\\AdminController::indexAction')->bind('admin');
+/*
+$app['controllers.admin'] = $app->share(function() use ($app) {
+    return new AdminController($app);
 });
+$app->get('/admin', "controllers.admin:indexAction");
+*/
+$app->get('/admin/aster/test', 'Controller\\AdminController::testAsterConnectionAction')->bind('admin_aster_test');
+
 
 $app->run();
