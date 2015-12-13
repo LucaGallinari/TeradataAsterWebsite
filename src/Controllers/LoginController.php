@@ -32,6 +32,7 @@ class LoginController {
         return $app['twig']->render('login.twig', array (
             'error'         => $app['security.last_error']($req),
             'last_username' => $app['session']->get('_security.last_username'),
+            'page'          => 'login',
         ));
     }
 } 

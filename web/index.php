@@ -79,7 +79,7 @@ $app['asset_path'] = '/src/Resources';
 
 // Routing
 $app->get('/', 'Controller\\LoginController::indexAction')->bind('login');
-$app->get('/app/', 'Controller\\AdminController::indexAction')->bind('app');
-$app->get('/app/aster/test', 'Controller\\AdminController::testAsterConnectionAction')->bind('app_aster_test');
+$app->get('/app/', 'Controller\\AppController::indexAction')->bind('app');
+$app->get('/app/aster/test', 'Controller\\AppController::testAsterConnectionAction')->bind('app_aster_test');
 
 $app->run();

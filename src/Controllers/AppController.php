@@ -1,6 +1,6 @@
 <?php
 /**
- * AdminController.php
+ * AppController.php
  *
  * PHP version 5.5
  *
@@ -14,42 +14,28 @@
 namespace Controller;
 
 use Silex\Application;
-use Symfony\Component\HttpFoundation\Request;
-use Model\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
-class AdminController {
-
-    /*protected $app;
-
-    public function __construct(Application $app)
-    {
-        $this->app = $app;
-    }*/
+class AppController {
 
     /**
-     * @param Request $req
      * @param Application $app
      * @return string
      */
-    public function indexAction(Request $req, Application $app)
+    public function indexAction(Application $app)
     {
         /** @var $token TokenInterface */
         $token = $app['security.token_storage']->getToken();
 
         if (null !== $token) {
-            $name = $token->getUser()->getId();
-            /* @var $user User
-
-            $user = $token->getUser();
-            $name = $user->getUsername();*/
+            $name = $token->getUser();
         } else {
             $name = 'ERROR';
         }
 
-        return $app['twig']->render('admin.twig', array (
-            'msg'   => 'Welcome to the admin page!',
+        return $app['twig']->render('app.twig', array (
             'token' => $name,
+            'page'  => 'app',
         ));
     }
 
@@ -75,11 +61,5 @@ class AdminController {
         } else{
             return "Connection could not be established.";
         }
-        /*
-        return $app['twig']->render('admin.html', array (
-            'msg'   => 'Welcome to the admin page!',
-            'token' => $app['security.token_storage']->getToken(),
-        ));
-        */
     }
 } 
