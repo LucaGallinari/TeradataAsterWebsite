@@ -6,18 +6,20 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 final class User implements UserInterface
 {
+    protected $id;
     protected $username;
     protected $password;
     protected $email;
     protected $enabled;
     protected $roles;
 
-    public function __construct($username, $password, $email, array $roles = array(['ROLE_USER']), $enabled = true)
+    public function __construct($id, $username, $password, $email, array $roles = array(['ROLE_USER']), $enabled = true)
     {
         if ('' === $username || null === $username) {
             throw new \InvalidArgumentException('The username cannot be empty.');
         }
 
+        $this->id = $id;
         $this->username = $username;
         $this->password = $password;
         $this->email = $email;
@@ -60,6 +62,11 @@ final class User implements UserInterface
         $this->enabled = $enable;
     }
 
+    public function getId()
+    {
+        return $this->id;
+    }
+
     public function getUsername()
     {
         return $this->username;
@@ -91,7 +98,7 @@ final class User implements UserInterface
 
     public function eraseCredentials()
     {
-        $this->username = null;
+        //$this->username = null;
         $this->password = null;
         $this->enabled = false;
 

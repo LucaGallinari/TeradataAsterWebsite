@@ -13,7 +13,6 @@
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-use Controller\AdminController;
 use Symfony\Component\Security\Core\Encoder\MessageDigestPasswordEncoder;
 use Silex\Provider;
 
@@ -42,21 +41,26 @@ $app->register(new Provider\DoctrineServiceProvider(), array(
 // Security
 $app->register(new Provider\SecurityServiceProvider(), array(
     'security.firewalls' => array(
-        'admin' => array(
-            'pattern' => '^/admin/',
+        'app' => array(
+            'pattern' => '^/.*$',
             'form' => array(
                 'login_path' => '/',
-                'check_path' => '/admin/login_check',
-                'default_target_path' => '/admin',
+                'check_path' => '/app/login_check',
+                'default_target_path' => '/app/',
+                'always_use_default_target_path' => true
             ),
             'logout' => array(
-                'logout_path' => '/admin/logout',
+                'logout_path' => '/app/logout',
                 'invalidate_session' => true
             ),
+            'anonymous' => true,
             'users' => $app->share(function () use ($app) {
                 return new Repository\UserProvider($app['db']);
             }),
         ),
+    ),
+    'security.access_rules' => array(
+        array('^/app/$', 'ROLE_ADMIN', 'http')
     ),
     'security.encoder.digest' => $app->share(function() {
         // return new Symfony\Component\Security\Core\Encoder\BCryptPasswordEncoder(12);
@@ -72,14 +76,7 @@ $app->register(new Provider\TwigServiceProvider(), array(
 
 // Routing
 $app->get('/', 'Controller\\LoginController::indexAction')->bind('login');
-$app->get('/admin', 'Controller\\AdminController::indexAction')->bind('admin');
-/*
-$app['controllers.admin'] = $app->share(function() use ($app) {
-    return new AdminController($app);
-});
-$app->get('/admin', "controllers.admin:indexAction");
-*/
-$app->get('/admin/aster/test', 'Controller\\AdminController::testAsterConnectionAction')->bind('admin_aster_test');
-
+$app->get('/app/', 'Controller\\AdminController::indexAction')->bind('app');
+$app->get('/app/aster/test', 'Controller\\AdminController::testAsterConnectionAction')->bind('app_aster_test');
 
 $app->run();

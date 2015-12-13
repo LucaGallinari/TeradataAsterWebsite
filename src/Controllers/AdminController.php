@@ -15,6 +15,7 @@ namespace Controller;
 
 use Silex\Application;
 use Model\User;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 class AdminController {
 
@@ -31,22 +32,22 @@ class AdminController {
      */
     public function indexAction(Application $app)
     {
+        /** @var $token TokenInterface */
         $token = $app['security.token_storage']->getToken();
 
         if (null !== $token) {
-            /** @var User */
+            $name = $token->getUser()->getId();
+            /* @var $user User
+
             $user = $token->getUser();
-            $name = $user->getUsername();
+            $name = $user->getUsername();*/
         } else {
             $name = 'ERROR';
         }
 
-        $logged = 'TODO'; //$app['security.token_storage']->is_granted('IS_AUTHENTICATED_FULLY');
-
         return $app['twig']->render('admin.html', array (
             'msg'   => 'Welcome to the admin page!',
-            'token' => $name,
-            'logged' => $logged,
+            'token' => $name
         ));
     }
 

@@ -15,10 +15,11 @@ namespace Repository;
 
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Core\User\User;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Doctrine\DBAL\Connection;
+
+use Model\User;
 
 class UserProvider implements UserProviderInterface {
 
@@ -53,7 +54,7 @@ class UserProvider implements UserProviderInterface {
             throw new UsernameNotFoundException(sprintf('Username "%s" does not exist.', $username));
         }
 
-        return new User($user['username'], $user['password'], explode(',', $user['roles']), true, true, true, true);
+        return new User($user['id'], $user['username'], $user['password'], $user['email'], explode(',', $user['roles']), true);
     }
 
     /**
@@ -87,6 +88,7 @@ class UserProvider implements UserProviderInterface {
      */
     public function supportsClass($class)
     {
-        return $class === 'Symfony\Component\Security\Core\User\User';
+        return $class === 'Model\User';
+        //return $class === 'Symfony\Component\Security\Core\User\User';
     }
 }
