@@ -14,6 +14,7 @@
 namespace Controller;
 
 use Silex\Application;
+use Symfony\Component\HttpFoundation\Request;
 use Model\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
@@ -27,10 +28,11 @@ class AdminController {
     }*/
 
     /**
+     * @param Request $req
      * @param Application $app
      * @return string
      */
-    public function indexAction(Application $app)
+    public function indexAction(Request $req, Application $app)
     {
         /** @var $token TokenInterface */
         $token = $app['security.token_storage']->getToken();
@@ -45,9 +47,9 @@ class AdminController {
             $name = 'ERROR';
         }
 
-        return $app['twig']->render('admin.html', array (
+        return $app['twig']->render('admin.twig', array (
             'msg'   => 'Welcome to the admin page!',
-            'token' => $name
+            'token' => $name,
         ));
     }
 

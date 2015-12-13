@@ -29,7 +29,7 @@ class LoginController {
     public function indexAction(Request $req, Application $app)
     {
 
-        return $app['twig']->render('login.html', array (
+        return $app['twig']->render('login.twig', array (
             'error'         => $app['security.last_error']($req),
             'last_username' => $app['session']->get('_security.last_username'),
         ));

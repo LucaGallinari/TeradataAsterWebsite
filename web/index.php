@@ -73,6 +73,9 @@ $app->register(new Provider\TwigServiceProvider(), array(
     'twig.path' => $__PROJDIR__.'/Views',
 ));
 
+// Assets
+$app['asset_path'] = '/src/Resources';
+
 
 // Routing
 $app->get('/', 'Controller\\LoginController::indexAction')->bind('login');

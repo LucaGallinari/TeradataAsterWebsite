@@ -1,14 +1,14 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Login</title>
-</head>
-<body>
+{% extends "base.twig" %}
+
+{% block head %}
+    <title>Admin</title>
+{% endblock %}
+
+{% block content %}
     <form action="{{ path('app_login_check') }}" method="post">
         <input type="text" name="_username" value="{{ last_username }}" />
         <input type="password" name="_password" value="" />
         <input type="submit" />
     </form>
     <p>Error: {{ error }}</p>
-</body>
-</html>
+{% endblock %}
