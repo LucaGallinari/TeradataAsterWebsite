@@ -6,48 +6,45 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 final class User implements UserInterface
 {
-    protected $id;
-    protected $username;
-    protected $password;
+
     protected $email;
+    protected $password;
     protected $enabled;
     protected $roles;
 
-    public function __construct($id, $username, $password, $email, array $roles = array(['ROLE_USER']), $enabled = true)
+    public function __construct($email, $password, array $roles = array(['ROLE_USER']), $enabled = true)
     {
-        if ('' === $username || null === $username) {
-            throw new \InvalidArgumentException('The username cannot be empty.');
+        if ('' === $email || null === $email) {
+            throw new \InvalidArgumentException('The email cannot be empty.');
         }
 
-        $this->id = $id;
-        $this->username = $username;
-        $this->password = $password;
         $this->email = $email;
+        $this->password = $password;
         $this->enabled = $enabled;
         $this->roles = $roles;
     }
 
     public function __toString()
     {
-        if (is_null($this->username)) {
+        if (is_null($this->email)) {
             return 'NULL';
         }
-        return $this->getUsername();
-    }
-
-    public function setUsername($username)
-    {
-        $this->username = $username;
-    }
-
-    public function setPassword($password)
-    {
-        $this->password = $password;
+        return $this->getEmail();
     }
 
     public function setEmail($email)
     {
         $this->email = $email;
+    }
+
+    public function setUsername($email)
+    {
+        $this->email = $email;
+    }
+
+    public function setPassword($password)
+    {
+        $this->password = $password;
     }
 
     public function setRoles($roles)
@@ -62,14 +59,14 @@ final class User implements UserInterface
         $this->enabled = $enable;
     }
 
-    public function getId()
+    public function getEmail()
     {
-        return $this->id;
+        return $this->email;
     }
 
     public function getUsername()
     {
-        return $this->username;
+        return $this->email;
     }
 
     public function getPassword()
@@ -77,18 +74,9 @@ final class User implements UserInterface
         return $this->password;
     }
 
-    public function getEmail()
-    {
-        return $this->email;
-    }
-
     public function getRoles()
     {
         return $this->roles;
-    }
-
-    public function getSalt()
-    {
     }
 
     public function isEnabled()
@@ -96,9 +84,13 @@ final class User implements UserInterface
         return $this->enabled;
     }
 
+    public function getSalt()
+    {
+        return '';
+    }
+
     public function eraseCredentials()
     {
-        //$this->username = null;
         $this->password = null;
         $this->enabled = false;
 

@@ -8,7 +8,7 @@
     <div class="row">
         <div class="col s12 m8 l6 offset-m2 offset-l3">
             <h3 class="center-align page-title">Login page</h3>
-            {% if error is defined %}
+            {% if error is defined and error!="" %}
                 <p class="red-text">
                     Error: {{ error }}
                 </p>
