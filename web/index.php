@@ -15,6 +15,8 @@ require_once __DIR__.'/../vendor/autoload.php';
 
 use Symfony\Component\Security\Core\Encoder\MessageDigestPasswordEncoder;
 use Silex\Provider;
+use ODBC_Aster\Provider\ODBCAsterServiceProvider;
+use App\Repository\UserProvider;
 
 $app = new Silex\Application();
 $__PROJDIR__ = __DIR__."/../src";
@@ -27,6 +29,7 @@ $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 $app->register(new Silex\Provider\ServiceControllerServiceProvider());
 
 // Doctrine
+/*
 $app->register(new Provider\DoctrineServiceProvider(), array(
     'db.options' => array(
         'driver'    => 'pdo_mysql',
@@ -37,6 +40,18 @@ $app->register(new Provider\DoctrineServiceProvider(), array(
         'password'  => 'phpmyadmin',
     ),
 ));
+*/
+
+$app->register(new ODBCASterServiceProvider(), array(
+    'odbc_aster.configs' => array(
+        'driver'   => '{AsterDriver}',
+        'host'     => '192.168.100.100',
+        'database' => 'recommendation',
+        'username' => 'db_superuser',
+        'password' => 'db_superuser',
+    ),
+));
+
 
 // Security
 $app->register(new Provider\SecurityServiceProvider(), array(
@@ -55,7 +70,7 @@ $app->register(new Provider\SecurityServiceProvider(), array(
             ),
             'anonymous' => true,
             'users' => $app->share(function () use ($app) {
-                return new App\Repository\UserProvider($app['db']);
+                return new UserProvider($app['odbc_aster']);
             }),
         ),
     ),

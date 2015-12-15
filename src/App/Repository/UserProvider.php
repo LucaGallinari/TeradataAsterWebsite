@@ -17,16 +17,16 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
-use Doctrine\DBAL\Connection;
 
+use ODBC_Aster\ODBCAsterManager;
 use App\Model\User;
 
 class UserProvider implements UserProviderInterface {
 
-    /** @var Connection */
+    /** @var ODBCAsterManager */
     private $conn;
 
-    public function __construct(Connection $conn)
+    public function __construct(ODBCAsterManager $conn)
     {
         $this->conn = $conn;
     }
@@ -45,15 +45,19 @@ class UserProvider implements UserProviderInterface {
      */
     public function loadUserByUsername($username)
     {
-        $stmt = $this->conn->executeQuery(
-            'SELECT * FROM users WHERE email = ?',
-            array(strtolower($username))
+        $results = $this->conn->executeQuery(
+            "SELECT * FROM users WHERE email = '$username'"
         );
 
-        if (!$user = $stmt->fetch()) {
+        if (!$user = $this->conn->fetch($results)) {
             throw new UsernameNotFoundException(sprintf('Email "%s" does not exist.', $username));
         }
 
+        /*
+        if (!$user = $stmt->fetch()) {
+            throw new UsernameNotFoundException(sprintf('Email "%s" does not exist.', $username));
+        }
+        */
         return new User($user['email'], $user['password'], explode(',', $user['roles']), true);
     }
 

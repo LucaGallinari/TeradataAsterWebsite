@@ -40,23 +40,12 @@ class AppController {
     }
 
     /**
+     * @param Application $app
      * @return string
      */
-    public function testAsterConnectionAction()
+    public function testAsterConnectionAction(Application $app)
     {
-        // Aster Cluster connection data
-        $driver     = '{AsterDriver}';
-        $server     = '192.168.100.100';
-        $database   = 'recommendation';
-        $user       = 'db_superuser';
-        $pass       = 'db_superuser';
-
-        // No changes needed from now on
-        $connection_string = "Driver=$driver;Server=$server;Database=$database";
-        // $connection_string = "DSN=testdsn";
-        $conn = odbc_connect($connection_string,$user,$pass);
-
-        if ($conn) {
+        if ($app['odbc_aster']->connect()) {
             return "Connection established!";
         } else{
             return "Connection could not be established.";
