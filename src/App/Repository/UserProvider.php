@@ -11,7 +11,7 @@
  * @link     TOINSERTLINK
  */
 
-namespace Repository;
+namespace App\Repository;
 
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -19,7 +19,7 @@ use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Doctrine\DBAL\Connection;
 
-use Model\User;
+use App\Model\User;
 
 class UserProvider implements UserProviderInterface {
 
@@ -88,7 +88,7 @@ class UserProvider implements UserProviderInterface {
      */
     public function supportsClass($class)
     {
-        return $class === 'Model\User';
+        return $class === 'App\Model\User';
         //return $class === 'Symfony\Component\Security\Core\User\User';
     }
 }

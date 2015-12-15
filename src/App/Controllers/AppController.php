@@ -11,7 +11,7 @@
  * @link     TOINSERTLINK
  */
 
-namespace Controller;
+namespace App\Controller;
 
 use Silex\Application;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;

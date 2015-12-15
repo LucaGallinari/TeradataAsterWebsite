@@ -55,7 +55,7 @@ $app->register(new Provider\SecurityServiceProvider(), array(
             ),
             'anonymous' => true,
             'users' => $app->share(function () use ($app) {
-                return new Repository\UserProvider($app['db']);
+                return new App\Repository\UserProvider($app['db']);
             }),
         ),
     ),
@@ -70,16 +70,16 @@ $app->register(new Provider\SecurityServiceProvider(), array(
 
 // Twig
 $app->register(new Provider\TwigServiceProvider(), array(
-    'twig.path' => $__PROJDIR__.'/Views',
+    'twig.path' => $__PROJDIR__.'/App/Views',
 ));
 
 // Assets
-$app['asset_path'] = '/src/Resources';
+$app['asset_path'] = '/src/App/Resources';
 
 
 // Routing
-$app->get('/', 'Controller\\LoginController::indexAction')->bind('login');
-$app->get('/app/', 'Controller\\AppController::indexAction')->bind('app');
-$app->get('/app/aster/test', 'Controller\\AppController::testAsterConnectionAction')->bind('app_aster_test');
+$app->get('/', 'App\\Controller\\LoginController::indexAction')->bind('login');
+$app->get('/app/', 'App\\Controller\\AppController::indexAction')->bind('app');
+$app->get('/app/aster/test', 'App\\Controller\\AppController::testAsterConnectionAction')->bind('app_aster_test');
 
 $app->run();
