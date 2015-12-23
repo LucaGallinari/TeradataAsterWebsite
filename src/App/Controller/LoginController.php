@@ -4,7 +4,7 @@
  *
  * PHP version 5.5
  *
- * @category
+ * @category App
  * @package  TeradataAsterWebsite
  * @author   Luca Gallinari <luke.gallinari@gmail.com>
  * @license  http://www.gnu.org/copyleft/gpl.html GNU General Public License
@@ -30,7 +30,7 @@ class LoginController {
     {
 
         return $app['twig']->render('login.twig', array (
-            'error'         => $app['security.last_error']($req),
+            'loginError'    => $app['security.last_error']($req),
             'last_username' => $app['session']->get('_security.last_username'),
             'page'          => 'login',
         ));

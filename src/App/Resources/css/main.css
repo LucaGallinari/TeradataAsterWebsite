@@ -1,4 +1,9 @@
 
 .page-title {
-    color:#66bb6a;
+    /*color:#66bb6a;*/
+    color:#fb8c00;
+}
+
+blockquote {
+    border-left: 5px solid #fb8c00;
 }

@@ -1,10 +1,25 @@
 <?php
+/**
+ * ODBCAsterConnectionManager.php
+ *
+ * PHP version 5.5
+ *
+ * @category
+ * @package  TeradataAsterWebsite
+ * @author   Luca Gallinari <luke.gallinari@gmail.com>
+ * @license  http://www.gnu.org/copyleft/gpl.html GNU General Public License
+ * @link     TOINSERTLINK
+ */
 
 namespace ODBC_Aster;
 
 use Silex\Application;
 
-class ODBCAsterManager
+/**
+ * Class ODBCAsterConnectionManager
+ * @package ODBC_Aster
+ */
+class ODBCAsterConnectionManager
 {
     protected $driver;
     protected $host;
@@ -13,7 +28,7 @@ class ODBCAsterManager
     protected $pass;
 
     /** @var resource */
-    protected $conn = NULL;
+    protected $connection = NULL;
 
     /**
      * @param $configs array
@@ -36,9 +51,9 @@ class ODBCAsterManager
         // No changes needed from now on
         $connection_string = "Driver=$this->driver;Server=$this->host;Database=$this->dbname";
         // $connection_string = "DSN=testdsn";
-        $this->conn = odbc_connect($connection_string, $this->user, $this->pass);
+        $this->connection = odbc_connect($connection_string, $this->user, $this->pass);
 
-        return $this->conn;
+        return $this->connection;
     }
 
     /**
@@ -50,11 +65,7 @@ class ODBCAsterManager
         // $stmt    = odbc_prepare($this->conn, 'CALL myproc(?,?,?)');
         // $success = odbc_execute($stmt, array($a, $b, $c));
         $ress = null;
-        try {
-            $ress = odbc_exec($this->conn, $query);
-        } catch(\Exception $e) {
-            echo "Error: ".$e->getMessage();
-        }
+        $ress = @odbc_exec($this->connection, $query);
         return $ress;
     }
 
@@ -75,10 +86,30 @@ class ODBCAsterManager
     }
 
     /**
+     * @param $query string query to execute
+     * @return array of array results or FALSE
+     */
+    public function executeQueryAndFetch ($query)
+    {
+        $results = $this->executeQuery($query);
+        $out = array();
+        while($res = odbc_fetch_array($results)) {
+            $out[] = $res;
+            if ($res===false) {
+                return false;
+            }
+        }
+        if (count($out)==0) {
+            return false;
+        }
+        return $out;
+    }
+
+    /**
      * @return boolean connected or not
     */
     public function isConnected()
     {
-        return !($this->conn === false);
+        return !($this->connection === false);
     }
 }

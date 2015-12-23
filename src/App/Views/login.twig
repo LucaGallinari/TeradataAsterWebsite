@@ -1,24 +1,32 @@
 {% extends "base.twig" %}
 
 {% block head %}
-    <title>Admin</title>
+    <title>Login!</title>
 {% endblock %}
 
 {% block content %}
+
     <div class="row">
         <div class="col s12 m8 l6 offset-m2 offset-l3">
-            <h3 class="center-align page-title">Login page</h3>
-            {% if error is defined and error!="" %}
+            <h4 class="center-align page-title">Login</h4>
+
+            <blockquote>
+                Login into the application or if you haven't registered yet,
+                please do it <a href="{{ path('signup') }}">here</a>
+            </blockquote>
+
+            {% if loginError is defined and loginError != "" %}
                 <p class="red-text">
-                    Error: {{ error }}
+                    Error: {{ loginError }}
                 </p>
             {% endif %}
+
             <form action="{{ path('app_login_check') }}" method="post" class="col s12">
                 <div class="row">
                     <div class="input-field col s12">
                         <i class="material-icons prefix">perm_identity</i>
                         <input name="_username" id="username" type="text" class="validate" value="{{ last_username }}">
-                        <label for="username">UserName</label>
+                        <label for="username">Email</label>
                     </div>
                 </div>
                 <div class="row">
@@ -29,11 +37,13 @@
                     </div>
                 </div>
                 <div class="row center-align">
-                    <button class="btn waves-effect waves-light green" type="submit" name="action">Login
+                    <button class="btn waves-effect waves-light orange darken-1" type="submit" name="action">Login
                         <i class="material-icons right">send</i>
                     </button>
                 </div>
             </form>
+
         </div>
     </div>
+
 {% endblock %}

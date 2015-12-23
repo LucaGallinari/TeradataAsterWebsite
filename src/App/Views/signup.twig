@@ -1,0 +1,56 @@
+{% extends "base.twig" %}
+
+{% block head %}
+    <title>Signup!</title>
+{% endblock %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col s12 m8 l6 offset-m2 offset-l3">
+
+            {% if message is defined and message != "" %}
+                <h4 class="orange-text">{{ message }}</h4>
+            {% endif %}
+
+            <h4 class="center-align page-title">Signup</h4>
+
+            {% if signupError is defined and signupError != "" %}
+                <p class="red-text">
+                    Error: {{ signupError }}
+                </p>
+            {% endif %}
+
+            <form action="{{ path('signup_do') }}" method="post" class="col s12">
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">perm_identity</i>
+                        <input name="_username" id="username" type="text" class="validate" required="required">
+                        <label for="username">Email</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">vpn_key</i>
+                        <input name="_password" id="password" type="password" class="validate" required="required">
+                        <label for="password">Password</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">vpn_key</i>
+                        <input name="_password_check" id="password_check" type="password" class="validate" required="required">
+                        <label for="password_check">Confirm Password</label>
+                    </div>
+                </div>
+                <div class="row center-align">
+                    <button class="btn waves-effect waves-light orange darken-1" type="submit" name="action">Singup
+                        <i class="material-icons right">send</i>
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+{% endblock %}

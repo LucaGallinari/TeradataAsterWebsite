@@ -1,9 +1,24 @@
 <?php
+/**
+ * User.php
+ *
+ * PHP version 5.5
+ *
+ * @category App
+ * @package  TeradataAsterWebsite
+ * @author   Luca Gallinari <luke.gallinari@gmail.com>
+ * @license  http://www.gnu.org/copyleft/gpl.html GNU General Public License
+ * @link     TOINSERTLINK
+ */
 
 namespace App\Model;
 
 use Symfony\Component\Security\Core\User\UserInterface;
 
+/**
+ * Class User
+ * @package App\Model
+ */
 final class User implements UserInterface
 {
 
@@ -12,7 +27,7 @@ final class User implements UserInterface
     protected $enabled;
     protected $roles;
 
-    public function __construct($email, $password, array $roles = array(['ROLE_USER']), $enabled = true)
+    public function __construct($email, $password, array $roles = array('ROLE_USER'), $enabled = true)
     {
         if ('' === $email || null === $email) {
             throw new \InvalidArgumentException('The email cannot be empty.');
@@ -30,6 +45,17 @@ final class User implements UserInterface
             return 'NULL';
         }
         return $this->getEmail();
+    }
+
+    public function __toDBInsertString()
+    {
+        return sprintf(
+            "'%s', '%s', '%s', '%s'",
+            $this->email,
+            $this->password,
+            implode(',', $this->roles),
+            $this->enabled
+        );
     }
 
     public function setEmail($email)

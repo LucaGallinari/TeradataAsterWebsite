@@ -1,31 +1,37 @@
 <?php
-
+/**
+ *
+ */
 namespace ODBC_Aster\Provider;
 
+use ODBC_Aster\Repository\DBRecommendationRepository;
 use Silex\Application;
 use Silex\ServiceProviderInterface;
-use ODBC_Aster\ODBCAsterManager;
 
+/**
+ * Class ODBCAsterServiceProvider
+ * @package ODBC_Aster\Provider
+ */
 class ODBCAsterServiceProvider implements ServiceProviderInterface
 {
     /**
      * @param Application $app
-     * @return ODBCAsterManager
+     * @return DBRecommendationRepository
      */
     public function register(Application $app)
     {
         if (!isset($app['odbc_aster.configs'])) {
             $app['odbc_aster.configs'] = array(
-                'driver'    => 'pdo_mysql',
-                'host'      => 'localhost',
-                'database'  => 'aster_website',
-                'username'  => 'phpmyadmin',
-                'password'  => 'phpmyadmin',
+                'driver'   => '{AsterDriver}',      // Driver name put in the ODBC file
+                'host'     => '192.168.100.100',    // IP or hostname of the DB
+                'database' => 'recommendation',     // DB name
+                'username' => 'db_superuser',
+                'password' => 'db_superuser',
             );
         }
         $app['odbc_aster'] = $app->share(function ($app) {
-            $odbc = new ODBCAsterManager($app['odbc_aster.configs']);
-            return $odbc;
+            $dbRepository = new DBRecommendationRepository($app['odbc_aster.configs']);
+            return $dbRepository;
         });
     }
 

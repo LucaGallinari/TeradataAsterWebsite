@@ -28,20 +28,7 @@ $app->register(new Silex\Provider\SessionServiceProvider());
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 $app->register(new Silex\Provider\ServiceControllerServiceProvider());
 
-// Doctrine
-/*
-$app->register(new Provider\DoctrineServiceProvider(), array(
-    'db.options' => array(
-        'driver'    => 'pdo_mysql',
-        'host'      => 'localhost',
-        // 'port'   => '24',
-        'dbname'    => 'aster_website',
-        'user'      => 'phpmyadmin',
-        'password'  => 'phpmyadmin',
-    ),
-));
-*/
-
+// ODBC Aster
 $app->register(new ODBCASterServiceProvider(), array(
     'odbc_aster.configs' => array(
         'driver'   => '{AsterDriver}',
@@ -51,7 +38,6 @@ $app->register(new ODBCASterServiceProvider(), array(
         'password' => 'db_superuser',
     ),
 ));
-
 
 // Security
 $app->register(new Provider\SecurityServiceProvider(), array(
@@ -70,17 +56,20 @@ $app->register(new Provider\SecurityServiceProvider(), array(
             ),
             'anonymous' => true,
             'users' => $app->share(function () use ($app) {
-                return new UserProvider($app['odbc_aster']);
+                return new UserProvider($app['odbc_aster'], $app['security.encoder.digest']);
             }),
         ),
     ),
-    'security.access_rules' => array(
-        array('^/app/$', 'ROLE_ADMIN', 'http')
+    'security.access_rules' => array (
+        array('^/app/$', 'ROLE_USER', 'http')
     ),
     'security.encoder.digest' => $app->share(function() {
         // return new Symfony\Component\Security\Core\Encoder\BCryptPasswordEncoder(12);
         return new MessageDigestPasswordEncoder('sha1', false, 1);
-    })
+    }),
+    'security.role_hierarchy' => array (
+        'ROLE_ADMIN' => array('ROLE_USER'),
+    )
 ));
 
 // Twig
@@ -94,6 +83,8 @@ $app['asset_path'] = '/src/App/Resources';
 
 // Routing
 $app->get('/', 'App\\Controller\\LoginController::indexAction')->bind('login');
+$app->get('/signup', 'App\\Controller\\SignupController::indexAction')->bind('signup');
+$app->post('/signup', 'App\\Controller\\SignupController::signupAction')->bind('signup_do');
 $app->get('/app/', 'App\\Controller\\AppController::indexAction')->bind('app');
 $app->get('/app/aster/test', 'App\\Controller\\AppController::testAsterConnectionAction')->bind('app_aster_test');
 

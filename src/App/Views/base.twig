@@ -30,6 +30,9 @@
                                 </li>
                                 <li><a href="{{ path('app_logout') }}">Logout</a></li>
                             {% else %}
+                                <li {% if page=="signup" %}class="active"{% endif %}>
+                                    <a href="{{ path('signup') }}">Signup</a>
+                                </li>
                                 <li {% if page=="login" %}class="active"{% endif %}>
                                     <a href="{{ path('login') }}">Login</a>
                                 </li>
@@ -52,6 +55,7 @@
         </header>
 
         <div class="container">
+            <p>&nbsp;</p>
             {% block content %}
                 <h1>Base layout</h1>
             {% endblock %}

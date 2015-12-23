@@ -4,7 +4,7 @@
  *
  * PHP version 5.5
  *
- * @category
+ * @category App
  * @package  TeradataAsterWebsite
  * @author   Luca Gallinari <luke.gallinari@gmail.com>
  * @license  http://www.gnu.org/copyleft/gpl.html GNU General Public License
@@ -18,17 +18,25 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 
-use ODBC_Aster\ODBCAsterManager;
+use Symfony\Component\Security\Core\Encoder\MessageDigestPasswordEncoder;
+use ODBC_Aster\Repository\DBRecommendationRepository;
 use App\Model\User;
 
+/**
+ * Class UserProvider
+ * @package App\Repository
+ */
 class UserProvider implements UserProviderInterface {
 
-    /** @var ODBCAsterManager */
-    private $conn;
+    /** @var DBRecommendationRepository */
+    private $db;
+    /** @var MessageDigestPasswordEncoder */
+    private $encoder;
 
-    public function __construct(ODBCAsterManager $conn)
+    public function __construct(DBRecommendationRepository $db, MessageDigestPasswordEncoder $encoder)
     {
-        $this->conn = $conn;
+        $this->db = $db;
+        $this->encoder = $encoder;
     }
 
     /**
@@ -45,20 +53,29 @@ class UserProvider implements UserProviderInterface {
      */
     public function loadUserByUsername($username)
     {
-        $results = $this->conn->executeQuery(
-            "SELECT * FROM users WHERE email = '$username'"
-        );
+        $user = $this->db->getUserByUsername($username);
 
-        if (!$user = $this->conn->fetch($results)) {
+        if ($user===false) {
             throw new UsernameNotFoundException(sprintf('Email "%s" does not exist.', $username));
         }
 
-        /*
-        if (!$user = $stmt->fetch()) {
-            throw new UsernameNotFoundException(sprintf('Email "%s" does not exist.', $username));
-        }
-        */
         return new User($user['email'], $user['password'], explode(',', $user['roles']), true);
+    }
+
+    /**
+     * Signup user with a given username and password
+     *
+     * @param string $username The username
+     * @param string $password The password
+     *
+     * @return bool
+     */
+    public function signupUser ($username, $password)
+    {
+        $password = $this->encoder->encodePassword($password, '');
+        $user = new User($username, $password);
+
+        return $this->db->insertUser($user);
     }
 
     /**
