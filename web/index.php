@@ -33,7 +33,7 @@ $app->register(new ODBCASterServiceProvider(), array(
     'odbc_aster.configs' => array(
         'driver'   => '{AsterDriver}',
         'host'     => '192.168.100.100',
-        'database' => 'recommendation',
+        'database' => 'beehive',
         'username' => 'db_superuser',
         'password' => 'db_superuser',
     ),

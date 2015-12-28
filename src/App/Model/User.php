@@ -22,17 +22,19 @@ use Symfony\Component\Security\Core\User\UserInterface;
 final class User implements UserInterface
 {
 
+    protected $id;
     protected $email;
     protected $password;
     protected $enabled;
     protected $roles;
 
-    public function __construct($email, $password, array $roles = array('ROLE_USER'), $enabled = true)
+    public function __construct($id = null, $email, $password, array $roles = array('ROLE_USER'), $enabled = true)
     {
         if ('' === $email || null === $email) {
             throw new \InvalidArgumentException('The email cannot be empty.');
         }
 
+        $this->id = $id;
         $this->email = $email;
         $this->password = $password;
         $this->enabled = $enabled;
@@ -56,6 +58,22 @@ final class User implements UserInterface
             implode(',', $this->roles),
             $this->enabled
         );
+    }
+
+    /**
+     * @param mixed $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
     }
 
     public function setEmail($email)

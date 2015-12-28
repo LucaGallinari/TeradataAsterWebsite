@@ -24,7 +24,7 @@ class ODBCAsterServiceProvider implements ServiceProviderInterface
             $app['odbc_aster.configs'] = array(
                 'driver'   => '{AsterDriver}',      // Driver name put in the ODBC file
                 'host'     => '192.168.100.100',    // IP or hostname of the DB
-                'database' => 'recommendation',     // DB name
+                'database' => 'beehive',            // DB name
                 'username' => 'db_superuser',
                 'password' => 'db_superuser',
             );

@@ -65,7 +65,7 @@ class ODBCAsterConnectionManager
         // $stmt    = odbc_prepare($this->conn, 'CALL myproc(?,?,?)');
         // $success = odbc_execute($stmt, array($a, $b, $c));
         $ress = null;
-        $ress = @odbc_exec($this->connection, $query);
+        $ress = odbc_exec($this->connection, $query);
         return $ress;
     }
 
@@ -92,10 +92,13 @@ class ODBCAsterConnectionManager
     public function executeQueryAndFetch ($query)
     {
         $results = $this->executeQuery($query);
+        if ($results === false) {
+            return false;
+        }
         $out = array();
         while($res = odbc_fetch_array($results)) {
             $out[] = $res;
-            if ($res===false) {
+            if ($res === false) {
                 return false;
             }
         }

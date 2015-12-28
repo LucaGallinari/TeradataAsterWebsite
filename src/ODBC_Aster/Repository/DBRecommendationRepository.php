@@ -35,33 +35,108 @@ class DBRecommendationRepository extends ODBCAsterConnectionManager
     }
 
     /**
-     * @return array users array of array
+     * @param $entity string name of the entity
+     *
+     * @return array|false users array of array or False if argument not a string
      */
-    public function getUsers ()
+    public function getAll ($entity)
     {
-        $results = $this->executeQueryAndFetch("SELECT * FROM users;");
+        if (!is_string($entity) || is_null($entity)) {
+            return false;
+        }
+        return $this->executeQueryAndFetch("SELECT * FROM $entity;");
+    }
+
+    /**
+     * Get all records of a given entity limited to a given number
+     * of elements from a given offset and ordered by a given value.
+     *
+     * @param $entity string name of the entity
+     * @param $num int number of elements to retrieve
+     * @param $offset int offset
+     * @param $orderby string name of the column to sort the list
+     *
+     * @return array|false users array of array or False if argument not a string
+     */
+    public function getLimitedAndOrdered ($entity, $num, $offset, $orderby)
+    {
+        if (!is_string($entity) || !is_numeric($num) || !is_numeric($offset)) {
+            return false;
+        }
+        return $this->executeQueryAndFetch("SELECT * FROM $entity ORDER BY $orderby ASC LIMIT $num OFFSET $offset;");
+    }
+
+    /**
+     * Get all records of a given entity based on given array of conditions.
+     *
+     * @param $entity string
+     * @param $conditions array with key (column name), value (equal condition)
+     *
+     * @return array|false array of columns or FALSE
+     */
+    public function getByEqualConditions ($entity, $conditions = array())
+    {
+        if (!is_string($entity)) {
+            return false;
+        }
+
+        $condsString = '';
+        foreach ($conditions as $key => $cond) {
+            $condsString .= "$key='$cond', ";
+        }
+        $condsString = substr($condsString, 0, -2);
+
+        $results = $this->executeQueryAndFetch("SELECT * FROM $entity WHERE $condsString;");
+        if ($results === false || is_null($results)) {
+            return false;
+        }
         return $results;
     }
 
     /**
-     * @param $username string
-     * @return array array of columns or FALSE
+     * Get all records of a given entity based on given array of conditions, limited to a given number
+     * of elements from a given offset and ordered by a given value.
+     *
+     * @param $select string
+     * @param $from string
+     * @param $where array with key (column name), value (equal condition)
+     * @param $num int number of elements to retrieve
+     * @param $offset int offset
+     * @param $orderby string name of the column to sort the list
+     *
+     * @return array|false array of columns or FALSE
      */
-    public function getUserByUsername ($username)
+    public function getByEqCondsAndLimitedAndOrdered ($select, $from, $where = array(), $num, $offset, $orderby)
     {
-        $result = $this->executeQueryAndFetch("SELECT * FROM users WHERE email = '".$username."'");
-        if ($result === false || is_null($result)) {
+        if (!is_string($select) || !is_string($from) || !is_numeric($num) || !is_numeric($offset)) {
             return false;
-        } else if (count($result)>1) {
-            // TODO: there can't be more than 1 user with the same USERNAME
-            echo("ERROR: There can't be more than 1 user with the same USERNAME");
         }
-        return $result[0];
+
+        $condsString = '';
+        foreach ($where as $key => $cond) {
+            $condsString .= "$key='$cond', ";
+        }
+        $condsString = substr($condsString, 0, -2);
+
+        $results = $this->executeQueryAndFetch("
+            SELECT $select
+            FROM $from
+            WHERE $condsString
+            ORDER BY $orderby ASC
+            LIMIT $num
+            OFFSET $offset;
+        ");
+        // $results = $this->executeQueryAndFetch("SELECT * FROM $entity WHERE $condsString ORDER BY $orderby ASC LIMIT $num OFFSET $offset;");
+        if ($results === false || is_null($results)) {
+            return false;
+        }
+        return $results;
     }
 
     /**
      * @param $user User obj
      * @return array array of columns or FALSE if error
+     * @todo
      */
     public function insertUser (User $user)
     {

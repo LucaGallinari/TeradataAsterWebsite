@@ -28,11 +28,17 @@ use App\Model\User;
  */
 class UserProvider implements UserProviderInterface {
 
+    const ENTITY_NAME = 'users';
+
     /** @var DBRecommendationRepository */
     private $db;
     /** @var MessageDigestPasswordEncoder */
     private $encoder;
 
+    /**
+     * @param DBRecommendationRepository $db
+     * @param MessageDigestPasswordEncoder $encoder
+     */
     public function __construct(DBRecommendationRepository $db, MessageDigestPasswordEncoder $encoder)
     {
         $this->db = $db;
@@ -53,13 +59,16 @@ class UserProvider implements UserProviderInterface {
      */
     public function loadUserByUsername($username)
     {
-        $user = $this->db->getUserByUsername($username);
+        $users = $this->db->getByEqualConditions(self::ENTITY_NAME, array('email' => $username));
+
+        // first and possibly only user
+        $user = $users[0];
 
         if ($user===false) {
             throw new UsernameNotFoundException(sprintf('Email "%s" does not exist.', $username));
         }
 
-        return new User($user['email'], $user['password'], explode(',', $user['roles']), true);
+        return new User($user['user_id'], $user['email'], $user['password'], explode(',', $user['roles']), true);
     }
 
     /**
@@ -110,6 +119,5 @@ class UserProvider implements UserProviderInterface {
     public function supportsClass($class)
     {
         return $class === 'App\Model\User';
-        //return $class === 'Symfony\Component\Security\Core\User\User';
     }
 }
