@@ -5,10 +5,14 @@
             <title>Teradata Aster Website</title>
         {% endblock %}
 
-        <!--Import Google Icon Font-->
+        <!-- Import Google Icon Font -->
         <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-        <!--Import materialize.css-->
+        <!-- Import materialize.css -->
         <link type="text/css" rel="stylesheet" href="{{ app.asset_path }}/css/materialize.min.css"  media="screen,projection"/>
+
+        {% block endhead %}
+        {% endblock %}
+
         <link type="text/css" rel="stylesheet" href="{{ app.asset_path }}/css/main.css" />
 
         <!--Let browser know website is optimized for mobile-->
@@ -78,5 +82,8 @@
                 $(".dropdown-button").dropdown();
             });
         </script>
+
+        {% block endjs %}
+        {% endblock %}
     </body>
 </html>

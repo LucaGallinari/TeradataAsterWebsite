@@ -39,8 +39,6 @@ class ODBCAsterConnectionManager
         $this->dbname   = $configs['database'];
         $this->user     = $configs['username'];
         $this->pass     = $configs['password'];
-
-        $this->connect();
     }
 
     /**
@@ -51,8 +49,8 @@ class ODBCAsterConnectionManager
         // No changes needed from now on
         $connection_string = "Driver=$this->driver;Server=$this->host;Database=$this->dbname";
         // $connection_string = "DSN=testdsn";
-        $this->connection = odbc_connect($connection_string, $this->user, $this->pass);
 
+        $this->connection = @odbc_connect($connection_string, $this->user, $this->pass);
         return $this->connection;
     }
 
@@ -62,8 +60,9 @@ class ODBCAsterConnectionManager
     */
     public function executeQuery ($query)
     {
-        // $stmt    = odbc_prepare($this->conn, 'CALL myproc(?,?,?)');
-        // $success = odbc_execute($stmt, array($a, $b, $c));
+        if (!$this->isConnected()) {
+            return false;
+        }
         $ress = null;
         $ress = odbc_exec($this->connection, $query);
         return $ress;
@@ -87,14 +86,17 @@ class ODBCAsterConnectionManager
 
     /**
      * @param $query string query to execute
-     * @return array of array results or FALSE
+     *
+     * @return array|false of array results
      */
     public function executeQueryAndFetch ($query)
     {
+        // exe query
         $results = $this->executeQuery($query);
         if ($results === false) {
             return false;
         }
+        // fetch results into an array
         $out = array();
         while($res = odbc_fetch_array($results)) {
             $out[] = $res;

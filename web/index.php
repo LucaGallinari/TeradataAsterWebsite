@@ -56,6 +56,9 @@ $app->register(new Provider\SecurityServiceProvider(), array(
             ),
             'anonymous' => true,
             'users' => $app->share(function () use ($app) {
+                if ($app['odbc_aster'] === false) {
+                    return new UserProvider();
+                }
                 return new UserProvider($app['odbc_aster'], $app['security.encoder.digest']);
             }),
         ),
@@ -87,5 +90,7 @@ $app->get('/signup', 'App\\Controller\\SignupController::indexAction')->bind('si
 $app->post('/signup', 'App\\Controller\\SignupController::signupAction')->bind('signup_do');
 $app->get('/app/', 'App\\Controller\\AppController::indexAction')->bind('app');
 $app->get('/app/aster/test', 'App\\Controller\\AppController::testAsterConnectionAction')->bind('app_aster_test');
+
+$app->get('/event/interest/add/', 'App\\Controller\\EventInterestController::addAction')->bind('event_interest_add');
 
 $app->run();

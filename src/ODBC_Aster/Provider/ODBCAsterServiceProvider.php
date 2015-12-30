@@ -31,6 +31,9 @@ class ODBCAsterServiceProvider implements ServiceProviderInterface
         }
         $app['odbc_aster'] = $app->share(function ($app) {
             $dbRepository = new DBRecommendationRepository($app['odbc_aster.configs']);
+            if ($dbRepository->connect() === false) {
+                return false;
+            }
             return $dbRepository;
         });
     }

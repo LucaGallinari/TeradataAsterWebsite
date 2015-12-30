@@ -4,10 +4,23 @@
     <title>App Panel</title>
 {% endblock %}
 
+{% block endhead %}
+    <!-- Slick -->
+    <link rel="stylesheet" type="text/css" href="{{ app.asset_path }}/libs/slick/slick.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ app.asset_path }}/libs/slick/slick-theme.css"/>
+{% endblock %}
+
 {% block content %}
     <div class="row">
-        <div class="col s12 m9 l10">
+        <div class="col s12">
             <h3 class="center-align page-title">App Panel</h3>
+            {% if errors is defined %}
+                {% for e in errors %}
+                    <p class="red-text">
+                        Error: {{ e }}
+                    </p>
+                {% endfor %}
+            {% endif %}
             <ul>
                 <li>User ID: {{ user.getId }}</li>
                 <li>
@@ -16,30 +29,156 @@
                     </a>
                 </li>
             </ul>
-            <div>
+            <div class="row">
                 <h4>Recommended Events</h4>
                 <ul>
-                    {%  for e in rec_events %}
-                        <li>{{ rec_events.getEventId }}</li>
-                    {% endfor %}
+                    {% if rec_events|length == 0 %}
+                        <li>No events found</li>
+                    {% else %}
+                        {%  for e in rec_events %}
+
+                            <li>{{ rec_events.getEventId }}</li>
+                        {% endfor %}
+                    {% endif %}
                 </ul>
             </div>
-            <div>
+            <div class="row">
                 <h4>Events</h4>
                 <ul>
-                    {%  for e in events %}
-                    <li>{{ e.getEventId }}</li>
-                    {% endfor %}
+                    {% if events|length == 0 %}
+                        <li>No events found</li>
+                    {% else %}
+                        <div id="events" class="col m12 l8 offset-l2">
+                            {%  for e in events %}
+                                <div class=" col s10">
+                                    <div class="card grey lighten-4">
+                                        <div class="card-content black-text">
+                                            <span class="card-title orange-text">{{ e.getEventId }}</span>
+                                            <p>{{ e.getStartTime }}</p>
+                                            <p>{{ e.getCity }}, {{ e.getState }}</p>
+                                            <p>{{ e.getCountry }}, {{ e.getZip }}</p>
+                                        </div>
+                                        <div class="row">
+
+                                            <!-- Not interested button -->
+                                            <div class="col s4 card-operation">
+                                                <a href="#" class="tooltipped not-interested-event waves-effect waves-red btn-flat {% if e.interested is defined %}red-text{% endif %}"
+                                                   data-id="{{ e.getEventId }}"
+                                                   data-position="bottom" data-delay="50" data-tooltip="Not Interested">
+                                                    <i class="material-icons">thumb_down</i>
+                                                </a>
+                                            </div>
+                                            <!-- Indifferent button -->
+                                            <div class="col s4 card-operation">
+                                                <a href="#" class="tooltipped interested-event waves-effect waves-green btn-flat {% if e.indifferent is defined %}orange-text{% endif %}"
+                                                   data-id="{{ e.getEventId }}"
+                                                   data-position="bottom" data-delay="50" data-tooltip="Indifferent">
+                                                    <i class="material-icons">thumbs_up_down</i>
+                                                </a>
+                                            </div>
+                                            <!-- Interested button -->
+                                            <div class="col s4 card-operation">
+                                                <a href="#" class="tooltipped interested-event waves-effect waves-green btn-flat {% if e.interested is defined %}green-text{% endif %}"
+                                                   data-id="{{ e.getEventId }}"
+                                                   data-position="bottom" data-delay="50" data-tooltip="Interested">
+                                                    <i class="material-icons">thumb_up</i>
+                                                </a>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
                 </ul>
             </div>
-            <div>
-                <h4>Interested Events</h4>
+            <div class="row">
+                <h4>Events of interest</h4>
                 <ul>
-                    {%  for e in int_events %}
-                        <li>{{ e.getEventId }}</li>
-                    {% endfor %}
+                    {% if int_events|length == 0 %}
+                        <li>No events found</li>
+                    {% else %}
+                        {%  for e in int_events %}
+                            <li>{{ e.getEventId }}</li>
+                        {% endfor %}
+                    {% endif %}
                 </ul>
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block endjs %}
+    <script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <script type="text/javascript" src="{{ app.asset_path }}/libs/slick/slick.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('#events').slick({
+                infinite: false,
+                centerMode: true,
+                centerPadding: '60px',
+                slidesToShow: 2,
+                initialSlide: 1,
+                responsive: [
+                    {
+                        breakpoint: 768,
+                        settings: {
+                            infinite: false,
+                            arrows: true,
+                            centerMode: false,
+                            slidesToShow: 1,
+                            initialSlide: 0
+                        }
+                    }
+                ]
+            });
+
+            $('.tooltipped').tooltip({delay: 50});
+
+            // ajax call to mark the event as interesting or not interesting
+            $('.interested-event').on('click', function() {
+                var id = $(this).attr('data-id');
+                if (id == '') {
+                    Materialize.toast('Not valid ID for the event.', 3000);
+                    return;
+                }
+                /*$clearCrono.hide();
+                var parentId = $clearCrono.parent();
+                $(parentId).append(preloader_wrapper('center'));*/
+
+                // do an ajax req
+                $.ajax({
+                    type: "GET",
+                    url: '{{ path('event_interest_add') }}?type=2&id='+id
+                })
+                .done(function( data ) {
+                    data = data.toString();
+                    if (data=="Ok") { // if everything's ok
+                        /*
+                        $('#listAnalysis').find('.collection-item').each(function() {
+                            $(this).fadeOut("normal", function() { $(this).remove();});
+                        });
+                        $('#noAnalysis').hide().removeClass('hide').show();*/
+                        Materialize.toast('Event inserted in your interesting!', 3000, 'rounded');
+                    } else { // error
+                        // rollback
+                        /*$clearCrono.show();*/
+                        // display error
+                        Materialize.toast('Error: '+data, 3000, 'rounded');
+                    }
+                    // $(parentId).find('.preloader-wrapper').remove();
+                })
+                .fail(function (data) {
+                    data = data.toString();
+                    // rollback
+                    /*$clearCrono.show();
+                    $(parentId).find('.preloader-wrapper').remove();*/
+                    // display error
+                    Materialize.toast('Error: '+data, 3000, 'rounded');
+                });
+            });
+        });
+    </script>
 {% endblock %}

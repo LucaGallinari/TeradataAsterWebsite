@@ -42,35 +42,41 @@ class SignupController {
         $signupError = '';
         $message = '';
 
-        if (!is_null($req->request->get('action'))) {
-            $username = isset($_POST['_username']) ? trim($_POST['_username']) : false;
+        if ($app['odbc_aster'] !== false) {
 
-            if ($username !== false && $username != '') {
-                $password = isset($_POST['_password']) ? $_POST['_password'] : false;
+            if (!is_null($req->request->get('action'))) {
+                $username = isset($_POST['_username']) ? trim($_POST['_username']) : false;
 
-                if ($password !== false && $password != '') {
-                    $password_check = isset($_POST['_password_check']) ? $_POST['_password_check'] : false;
+                if ($username !== false && $username != '') {
+                    $password = isset($_POST['_password']) ? $_POST['_password'] : false;
 
-                    if ($password_check !== false && $password_check == $password) {
-                        /**@var $userProvider UserProvider */
-                        $userProvider = new UserProvider($app['odbc_aster'], $app['security.encoder.digest']);
-                        //$userProvider = $app['security.firewalls']['app']['users'];
+                    if ($password !== false && $password != '') {
+                        $password_check = isset($_POST['_password_check']) ? $_POST['_password_check'] : false;
 
-                        if ($userProvider->signupUser($username, $password)) {
-                            $message = 'The registration has ended successfully. Now you can login!';
+                        if ($password_check !== false && $password_check == $password) {
+                            /**@var $userProvider UserProvider */
+                            $userProvider = new UserProvider($app['odbc_aster'], $app['security.encoder.digest']);
+                            //$userProvider = $app['security.firewalls']['app']['users'];
 
+                            if ($userProvider->signupUser($username, $password)) {
+                                $message = 'The registration has ended successfully. Now you can login!';
+
+                            } else {
+                                $signupError = 'The user is already present. Please change the email address!';
+                            }
                         } else {
-                            $signupError = 'The user is already present. Please change the email address!';
+                            $signupError = 'Password confirmation does not match the password inserted.';
                         }
                     } else {
-                        $signupError = 'Password confirmation does not match the password inserted.';
+                        $signupError = 'Invalid Password (probably empty).';
                     }
                 } else {
-                    $signupError = 'Invalid Password (probably empty).';
+                    $signupError = 'Invalid Email.';
                 }
-            } else {
-                $signupError = 'Invalid Email.';
             }
+
+        } else {
+            $signupError = 'Could not connect to the database! Please retry soon.';
         }
 
         return $app['twig']->render('signup.twig', array (

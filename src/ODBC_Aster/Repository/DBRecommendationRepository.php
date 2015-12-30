@@ -82,9 +82,9 @@ class DBRecommendationRepository extends ODBCAsterConnectionManager
 
         $condsString = '';
         foreach ($conditions as $key => $cond) {
-            $condsString .= "$key='$cond', ";
+            $condsString .= "$key='$cond' AND ";
         }
-        $condsString = substr($condsString, 0, -2);
+        $condsString = substr($condsString, 0, -5);
 
         $results = $this->executeQueryAndFetch("SELECT * FROM $entity WHERE $condsString;");
         if ($results === false || is_null($results)) {
@@ -114,9 +114,9 @@ class DBRecommendationRepository extends ODBCAsterConnectionManager
 
         $condsString = '';
         foreach ($where as $key => $cond) {
-            $condsString .= "$key='$cond', ";
+            $condsString .= "$key='$cond' AND ";
         }
-        $condsString = substr($condsString, 0, -2);
+        $condsString = substr($condsString, 0, -5);
 
         $results = $this->executeQueryAndFetch("
             SELECT $select
@@ -134,19 +134,20 @@ class DBRecommendationRepository extends ODBCAsterConnectionManager
     }
 
     /**
-     * @param $user User obj
-     * @return array array of columns or FALSE if error
-     * @todo
+     * @param string $entity
+     * @param mixed obj
+     *
+     * @return array|false array of columns or FALSE if error
      */
-    public function insertUser (User $user)
+    public function insertObj ($entity, $obj)
     {
-        $str = $user->__toDBInsertString();
-        $result = $this->executeQuery("INSERT INTO users VALUES (".$str.")");
+        $str = $obj->__toDBInsertString();
+        $result = $this->executeQuery("INSERT INTO $entity VALUES (".$str.")");
 
         if ($result === false) {
             return false;
         }
-        return $result[0];
+        return true;
     }
 
 }

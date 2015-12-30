@@ -34,6 +34,9 @@ class AppController {
     public function indexAction(Application $app, Request $req)
     {
         $errors = array();
+        $eventsRec = array();
+        $events = array();
+        $eventsInt = array();
 
         /** @var $token TokenInterface */
         $token = $app['security.token_storage']->getToken();
@@ -46,33 +49,39 @@ class AppController {
             $page = 0;
         }
 
-        // recommended events
-        $userRecProvider = new UserRecommendationProvider($app['odbc_aster']);
-        $eventsRec = $userRecProvider->getUserRecommendations(
-            $user->getId(),
-            self::NUM_EVENTS_TO_RETRIEVE,
-            $page * self::NUM_EVENTS_TO_RETRIEVE
-        );
-        if ($eventsRec === false) {
-            $errors[] = "Error while retrieving recommended events for the user! (Bad Query?)";
-        }
+        if ($app['odbc_aster'] !== false) {
 
-        // events
-        $eventsProvider = new EventProvider($app['odbc_aster']);
-        $events = $eventsProvider->getEvents(self::NUM_EVENTS_TO_RETRIEVE, $page * self::NUM_EVENTS_TO_RETRIEVE);
-        if ($events === false) {
-            $errors[] = "Error while retrieving events! (Bad Query?)";
-        }
+            // recommended events
+            $userRecProvider = new UserRecommendationProvider($app['odbc_aster']);
+            $eventsRec = $userRecProvider->getUserRecommendations(
+                $user->getId(),
+                self::NUM_EVENTS_TO_RETRIEVE,
+                $page * self::NUM_EVENTS_TO_RETRIEVE
+            );
+            if ($eventsRec === false) {
+                $errors[] = "Error while retrieving recommended events for the user! (Bad Query?)";
+            }
 
-        // interested events
-        $userIntProvider = new UserInterestProvider($app['odbc_aster']);
-        $eventsInt = $userIntProvider->getUserInterests(
-            $user->getId(),
-            self::NUM_EVENTS_TO_RETRIEVE,
-            $page * self::NUM_EVENTS_TO_RETRIEVE
-        );
-        if ($eventsRec === false) {
-            $errors[] = "Error while retrieving interested events for the user! (Bad Query?)";
+            // events
+            $eventsProvider = new EventProvider($app['odbc_aster']);
+            $events = $eventsProvider->getEvents(self::NUM_EVENTS_TO_RETRIEVE, $page * self::NUM_EVENTS_TO_RETRIEVE);
+            if ($events === false) {
+                $errors[] = "Error while retrieving events! (Bad Query?)";
+            }
+
+            // interested events
+            $userIntProvider = new UserInterestProvider($app['odbc_aster']);
+            $eventsInt = $userIntProvider->getUserInterests(
+                $user->getId(),
+                self::NUM_EVENTS_TO_RETRIEVE,
+                $page * self::NUM_EVENTS_TO_RETRIEVE
+            );
+            if ($eventsRec === false) {
+                $errors[] = "Error while retrieving interested events for the user! (Bad Query?)";
+            }
+
+        } else {
+            $errors[] = "Could not connect to the DB!";
         }
 
 
@@ -93,7 +102,7 @@ class AppController {
      */
     public function testAsterConnectionAction(Application $app)
     {
-        if ($app['odbc_aster']->connect()) {
+        if ($app['odbc_aster']->isConnected()) {
             return "Connection established!";
         } else{
             return "Connection could not be established.";

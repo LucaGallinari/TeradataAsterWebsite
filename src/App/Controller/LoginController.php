@@ -28,9 +28,14 @@ class LoginController {
      */
     public function indexAction(Request $req, Application $app)
     {
+        if ($app['odbc_aster'] === false) {
+            $loginError = "Could not connect to the DB!";
+        } else {
+            $loginError = $app['security.last_error']($req);
+        }
 
         return $app['twig']->render('login.twig', array (
-            'loginError'    => $app['security.last_error']($req),
+            'loginError'    => $loginError,
             'last_username' => $app['session']->get('_security.last_username'),
             'page'          => 'login',
         ));

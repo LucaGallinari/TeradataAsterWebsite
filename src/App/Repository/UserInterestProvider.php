@@ -13,6 +13,7 @@
 
 namespace App\Repository;
 
+use App\Model\UserInterest;
 use ODBC_Aster\Repository\DBRecommendationRepository;
 use Symfony\Component\Validator\Exception\InvalidArgumentException;
 
@@ -70,5 +71,25 @@ class UserInterestProvider
 
         return $events;
     }
+    /**
+     * Add an event to the interest of the user
+     *
+     * @param mixed $userId user id
+     * @param mixed $eventId event id
+     * @param int $interested user interested
+     * @param int $not_interested user not interested
+     *
+     * @return bool
+     */
+    public function addUserInterest ($userId, $eventId, $interested = 0, $not_interested = 0)
+    {
+        if (is_null($this->db)) {
+            return false;
+        }
+        $userInt = new UserInterest($userId, $eventId, $interested, $not_interested);
+
+        return $this->db->insertObj(self::ENTITY_NAME, $userInt);
+    }
+
 
 }

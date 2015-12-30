@@ -2,7 +2,7 @@
 /**
  * Event.php
  *
- * PHP version 5.5
+ * PHP version 5.6
  *
  * @category App
  * @package  TeradataAsterWebsite

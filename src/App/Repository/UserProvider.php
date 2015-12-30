@@ -39,7 +39,7 @@ class UserProvider implements UserProviderInterface {
      * @param DBRecommendationRepository $db
      * @param MessageDigestPasswordEncoder $encoder
      */
-    public function __construct(DBRecommendationRepository $db, MessageDigestPasswordEncoder $encoder)
+    public function __construct(DBRecommendationRepository $db = null, MessageDigestPasswordEncoder $encoder = null)
     {
         $this->db = $db;
         $this->encoder = $encoder;
@@ -59,6 +59,9 @@ class UserProvider implements UserProviderInterface {
      */
     public function loadUserByUsername($username)
     {
+        if (is_null($this->db)) {
+            throw new UsernameNotFoundException('Could not connect to the DB!');
+        }
         $users = $this->db->getByEqualConditions(self::ENTITY_NAME, array('email' => $username));
 
         // first and possibly only user
@@ -81,10 +84,13 @@ class UserProvider implements UserProviderInterface {
      */
     public function signupUser ($username, $password)
     {
+        if (is_null($this->db)) {
+            return false;
+        }
         $password = $this->encoder->encodePassword($password, '');
         $user = new User($username, $password);
 
-        return $this->db->insertUser($user);
+        return $this->db->insertObj(self::ENTITY_NAME, $user);
     }
 
     /**
