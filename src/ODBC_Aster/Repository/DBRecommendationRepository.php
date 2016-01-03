@@ -87,6 +87,7 @@ class DBRecommendationRepository extends ODBCAsterConnectionManager
         $condsString = substr($condsString, 0, -5);
 
         $results = $this->executeQueryAndFetch("SELECT * FROM $entity WHERE $condsString;");
+
         if ($results === false || is_null($results)) {
             return false;
         }
@@ -135,9 +136,9 @@ class DBRecommendationRepository extends ODBCAsterConnectionManager
 
     /**
      * @param string $entity
-     * @param mixed obj
+     * @param mixed $obj
      *
-     * @return array|false array of columns or FALSE if error
+     * @return bool success or not
      */
     public function insertObj ($entity, $obj)
     {
@@ -150,4 +151,44 @@ class DBRecommendationRepository extends ODBCAsterConnectionManager
         return true;
     }
 
+    /**
+     * @param string $entity
+     * @param array $conds array of conditions 'column'=>value
+     *
+     * @return bool success or not
+     */
+    public function deleteObj ($entity, $conds = array())
+    {
+        $condsString = '';
+        foreach ($conds as $key => $cond) {
+            $condsString .= "$key='$cond' AND ";
+        }
+        $condsString = substr($condsString, 0, -5);
+
+        $result = $this->executeQuery("DELETE FROM $entity WHERE $condsString;");
+
+        if ($result === false) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * @param string $entity
+     * @param mixed $eventId
+     * @param mixed $userId
+     * @param mixed $obj
+     *
+     * @return array|false array of columns or FALSE if error
+     */
+    public function updateObj ($entity, $eventId, $userId, $obj)
+    {
+        $str = $obj->__toDBUpdateString();
+        $result = $this->executeQuery("UPDATE $entity SET ".$str." WHERE user_id='$userId' AND event_id='$eventId'");
+
+        if ($result === false) {
+            return false;
+        }
+        return true;
+    }
 }

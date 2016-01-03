@@ -71,6 +71,7 @@ class UserInterestProvider
 
         return $events;
     }
+
     /**
      * Add an event to the interest of the user
      *
@@ -91,5 +92,23 @@ class UserInterestProvider
         return $this->db->insertObj(self::ENTITY_NAME, $userInt);
     }
 
+    /**
+     * Update info regarding an event interests for a user
+     *
+     * @param mixed $userId user id
+     * @param mixed $eventId event id
+     * @param int $interested user interested
+     * @param int $not_interested user not interested
+     *
+     * @return bool
+     */
+    public function updateUserInterest ($userId, $eventId, $interested = 0, $not_interested = 0)
+    {
+        if (is_null($this->db)) {
+            return false;
+        }
+        $userInt = new UserInterest($userId, $eventId, $interested, $not_interested);
 
+        return $this->db->updateObj(self::ENTITY_NAME, $eventId, $userId, $userInt);
+    }
 }

@@ -1,0 +1,140 @@
+{% extends "base.twig" %}
+
+{% block head %}
+    <title>App Panel</title>
+{% endblock %}
+
+{% block endhead %}
+    <!-- Slick -->
+    <link rel="stylesheet" type="text/css" href="{{ app.asset_path }}/libs/slick/slick.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ app.asset_path }}/libs/slick/slick-theme.css"/>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col s12">
+
+            {% if message is defined and message != "" %}
+                <div class="row">
+                    <div class="col s12 m8 l6 offset-m2 offset-l3">
+                        <div class="card-panel green center white-text">
+                            <span>{{ message }}</span>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if errors is defined and errors|length != 0 %}
+                <div class="row">
+                    <div class="col s12 m8 l6 offset-m2 offset-l3">
+                        <div class="card-panel red lighten-1 center white-text">
+                            {% for e in errors %}
+                                <p>{{ e }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <h4 class="center-align page-title">Events Manager Page</h4>
+
+            <!-- List of Events that i marked (interested, not, indifferent) -->
+            <div class="row">
+                <br>
+                <ul>
+                    {% if my_events|length == 0 %}
+                        <li>No events found</li>
+                    {% else %}
+                        <div id="events" class="col l12">
+
+                            {%  for e in my_events %}
+                                <div class=" col s12">
+                                    <div class="card grey lighten-4">
+                                        <div class="card-content black-text">
+                                            <span class="card-title orange-text">{{ e.getEventId }}</span>
+                                            <span>&nbsp;&nbsp;&nbsp;<a href="{{ path('myevents_del') }}?eventid={{ e.getEventId }}"><i class="material-icons prefix">delete</i></a></span>
+                                            <p>{{ e.getStartTime }}</p>
+                                            <p>{{ e.getCity }}, {{ e.getState }}</p>
+                                            <p>{{ e.getCountry }}, {{ e.getZip }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+
+                        </div>
+                    {% endif %}
+
+                </ul>
+            </div>
+
+            <!-- Create an event -->
+            <div class="row">
+                <br><br>
+
+                <form class="col s12 m10 l8 offset-m1 offset-l2" action="{{ path('myevents_add') }}" method="post">
+
+                    <div class="row">
+                        <div class="input-field col s12 m8">
+                            <i class="material-icons prefix">info_outline</i>
+                            <input id="title" type="text" class="validate" name="title" required="required">
+                            <label for="title">Title</label>
+                        </div>
+                        <div class="input-field col s12 m4">
+                            <i class="material-icons prefix">av_timer</i>
+                            <input id="startt" type="text" class="validate" name="startt" required="required">
+                            <label for="startt">Start Time (eg. YYYY-MM-DD)</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <i class="material-icons prefix">mode_edit</i>
+                            <textarea id="description" class="materialize-textarea" name="description" required="required"></textarea>
+                            <label for="description">Description</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col m6 s12">
+                            <i class="material-icons prefix">business</i>
+                            <input id="city" type="text" class="validate" name="city">
+                            <label for="city">City</label>
+                        </div>
+                        <div class="input-field col m6 s12">
+                            <input id="state" type="text" class="validate" name="state">
+                            <label for="state">State</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col m6 s12">
+                            <i class="material-icons prefix">location_on</i>
+                            <input id="zip" type="text" class="validate" name="zip">
+                            <label for="zip">Zip</label>
+                        </div>
+                        <div class="input-field col m6 s12">
+                            <input id="country" type="text" class="validate" name="country">
+                            <label for="country">Country</label>
+                        </div>
+                    </div>
+                    <div class="row center-align">
+                        <button class="btn waves-effect waves-light orange darken-1" type="submit" name="action">Insert
+                            <i class="material-icons right">send</i>
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block endjs %}
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            // $('.tooltipped').tooltip({delay: 50});
+
+        });
+    </script>
+{% endblock %}

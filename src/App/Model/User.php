@@ -28,7 +28,7 @@ final class User implements UserInterface
     protected $enabled;
     protected $roles;
 
-    public function __construct($id = null, $email, $password, array $roles = array('ROLE_USER'), $enabled = true)
+    public function __construct($id, $email, $password, array $roles = array('ROLE_USER'), $enabled = true)
     {
         if ('' === $email || null === $email) {
             throw new \InvalidArgumentException('The email cannot be empty.');
@@ -52,7 +52,8 @@ final class User implements UserInterface
     public function __toDBInsertString()
     {
         return sprintf(
-            "'%s', '%s', '%s', '%s'",
+            "'%s', '%s', '%s', '%s', '%s'",
+            $this->id,
             $this->email,
             $this->password,
             implode(',', $this->roles),

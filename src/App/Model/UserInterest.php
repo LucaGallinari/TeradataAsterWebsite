@@ -71,6 +71,17 @@ class UserInterest
         );
     }
 
+    public function __toDBUpdateString()
+    {
+        return sprintf(
+            "invited='%s', request_time='%s', interested='%s', not_interested='%s'",
+            $this->invited,
+            $this->request_time,
+            $this->interested,
+            $this->not_interested
+        );
+    }
+
     /**
      * @param mixed $event_id
      */

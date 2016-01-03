@@ -86,11 +86,15 @@ $app['asset_path'] = '/src/App/Resources';
 
 // Routing
 $app->get('/', 'App\\Controller\\LoginController::indexAction')->bind('login');
-$app->get('/signup', 'App\\Controller\\SignupController::indexAction')->bind('signup');
-$app->post('/signup', 'App\\Controller\\SignupController::signupAction')->bind('signup_do');
+$app->get('/signup/', 'App\\Controller\\SignupController::indexAction')->bind('signup');
+$app->post('/signup/', 'App\\Controller\\SignupController::signupAction')->bind('signup_do');
 $app->get('/app/', 'App\\Controller\\AppController::indexAction')->bind('app');
+$app->get('/my-events/', 'App\\Controller\\EventController::indexAction')->bind('myevents');
+$app->post('/my-events/', 'App\\Controller\\EventController::addAction')->bind('myevents_add');
+$app->get('/my-events/del', 'App\\Controller\\EventController::delAction')->bind('myevents_del');
+
 $app->get('/app/aster/test', 'App\\Controller\\AppController::testAsterConnectionAction')->bind('app_aster_test');
 
-$app->get('/event/interest/add/', 'App\\Controller\\EventInterestController::addAction')->bind('event_interest_add');
+$app->get('/events/interest/add/', 'App\\Controller\\EventInterestController::addAction')->bind('events_interest_add');
 
 $app->run();

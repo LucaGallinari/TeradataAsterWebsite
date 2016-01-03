@@ -77,18 +77,19 @@ class UserProvider implements UserProviderInterface {
     /**
      * Signup user with a given username and password
      *
+     * @param string $userid user ID
      * @param string $username The username
      * @param string $password The password
      *
      * @return bool
      */
-    public function signupUser ($username, $password)
+    public function signupUser ($userid, $username, $password)
     {
         if (is_null($this->db)) {
             return false;
         }
         $password = $this->encoder->encodePassword($password, '');
-        $user = new User($username, $password);
+        $user = new User($userid, $username, $password);
 
         return $this->db->insertObj(self::ENTITY_NAME, $user);
     }

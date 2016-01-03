@@ -13,6 +13,7 @@
 
 namespace App\Controller;
 
+use App\Model\Event;
 use App\Model\User;
 use App\Repository\EventProvider;
 use App\Repository\UserInterestProvider;
@@ -42,7 +43,7 @@ class AppController {
         $token = $app['security.token_storage']->getToken();
         /** @var $user User */
         $user = $token->getUser();
-        // $id = $user->getId();
+        $id = $user->getId();
 
         $page = $req->get('page', 0);
         if (!is_numeric($page) || $page < 0) {
@@ -54,7 +55,7 @@ class AppController {
             // recommended events
             $userRecProvider = new UserRecommendationProvider($app['odbc_aster']);
             $eventsRec = $userRecProvider->getUserRecommendations(
-                $user->getId(),
+                $id,
                 self::NUM_EVENTS_TO_RETRIEVE,
                 $page * self::NUM_EVENTS_TO_RETRIEVE
             );
@@ -62,9 +63,13 @@ class AppController {
                 $errors[] = "Error while retrieving recommended events for the user! (Bad Query?)";
             }
 
-            // events
+            // general events
             $eventsProvider = new EventProvider($app['odbc_aster']);
-            $events = $eventsProvider->getEvents(self::NUM_EVENTS_TO_RETRIEVE, $page * self::NUM_EVENTS_TO_RETRIEVE);
+            $events = $eventsProvider->getEventsWithInterests(
+                $id,
+                self::NUM_EVENTS_TO_RETRIEVE,
+                $page * self::NUM_EVENTS_TO_RETRIEVE
+            );
             if ($events === false) {
                 $errors[] = "Error while retrieving events! (Bad Query?)";
             }
@@ -72,18 +77,17 @@ class AppController {
             // interested events
             $userIntProvider = new UserInterestProvider($app['odbc_aster']);
             $eventsInt = $userIntProvider->getUserInterests(
-                $user->getId(),
+                $id,
                 self::NUM_EVENTS_TO_RETRIEVE,
                 $page * self::NUM_EVENTS_TO_RETRIEVE
             );
-            if ($eventsRec === false) {
+            if ($eventsInt === false) {
                 $errors[] = "Error while retrieving interested events for the user! (Bad Query?)";
             }
 
         } else {
             $errors[] = "Could not connect to the DB!";
         }
-
 
         return $app['twig']->render('app.twig', array (
             'user'      => $user,
@@ -92,7 +96,7 @@ class AppController {
             'int_events'=> $eventsInt,
             'p'         => $page + 1,
             'error'     => $errors,
-            'page'      => 'app',
+            'page'      => 'discover',
         ));
     }
 

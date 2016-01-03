@@ -10,16 +10,26 @@
         <div class="col s12 m8 l6 offset-m2 offset-l3">
 
             {% if message is defined and message != "" %}
-                <h4 class="orange-text">{{ message }}</h4>
+                <div class="row">
+                    <div class="col s12">
+                        <div class="card-panel green center white-text">
+                          <span>{{ message }}</span>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if signupError is defined and signupError != "" %}
+                <div class="row">
+                    <div class="col s12">
+                        <div class="card-panel red lighten-1 center white-text">
+                            <span>{{ signupError }}</span>
+                        </div>
+                    </div>
+                </div>
             {% endif %}
 
             <h4 class="center-align page-title">Signup</h4>
-
-            {% if signupError is defined and signupError != "" %}
-                <p class="red-text">
-                    Error: {{ signupError }}
-                </p>
-            {% endif %}
 
             <form action="{{ path('signup_do') }}" method="post" class="col s12">
                 <div class="row">

@@ -17,6 +17,9 @@ blockquote {
     height: 40px;
 }
 
+.card-progress {
+    padding: 5px 0;
+}
 .card-operation {
     text-align: center;
 }

@@ -27,7 +27,8 @@ class Event
     protected $state;
     protected $zip;
     protected $country;
-    // protected $c_arr;
+    /** @var $c_arr array */
+    protected $c_arr; // 100 c_num + c_other
 
     public function __construct(
         $event_id,
@@ -36,12 +37,18 @@ class Event
         $city = '',
         $state = '',
         $zip = '',
-        $country = ''
+        $country = '',
+        $c_arr = array()
     ) {
-        if ($event_id == '' || is_null($event_id)) {
-            throw new \InvalidArgumentException('EventID is not valid.');
-        } else if ($user_id == '' || is_null($user_id)) {
+        if ($user_id == '' || is_null($user_id)) {
             throw new \InvalidArgumentException('UserID is not valid.');
+        }
+
+        $len = count($c_arr);
+        if ($len < 101) {
+            for ($i = $len; $i < 101; ++$i) {
+                $c_arr[$i] = 0;
+            }
         }
 
         $this->event_id     = $event_id;
@@ -51,13 +58,27 @@ class Event
         $this->state        = $state;
         $this->zip          = $zip;
         $this->country      = $country;
-        // $this->c_arr        = $c_arr;
-
+        $this->c_arr        = $c_arr;
     }
 
     public function __toString()
     {
         return $this->getEventId();
+    }
+
+    public function __toDBInsertString()
+    {
+        return sprintf(
+            "'%s', '%s', '%s', '%s', '%s', '%s', '%s', %s",
+            $this->event_id,
+            $this->user_id,
+            $this->start_time,
+            $this->city,
+            $this->state,
+            $this->zip,
+            $this->country,
+            implode(',', $this->c_arr)
+        );
     }
 
     /**
@@ -172,7 +193,21 @@ class Event
         return $this->zip;
     }
 
+    /**
+     * @param array $c_arr
+     */
+    public function setCArr($c_arr = array())
+    {
+        $this->c_arr = $c_arr;
+    }
 
+    /**
+     * @return array
+     */
+    public function getCArr()
+    {
+        return $this->c_arr;
+    }
 
 }
 

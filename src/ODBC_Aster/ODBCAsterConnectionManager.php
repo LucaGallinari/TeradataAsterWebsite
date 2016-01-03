@@ -64,7 +64,7 @@ class ODBCAsterConnectionManager
             return false;
         }
         $ress = null;
-        $ress = odbc_exec($this->connection, $query);
+        $ress = @odbc_exec($this->connection, $query);
         return $ress;
     }
 
@@ -103,9 +103,6 @@ class ODBCAsterConnectionManager
             if ($res === false) {
                 return false;
             }
-        }
-        if (count($out)==0) {
-            return false;
         }
         return $out;
     }

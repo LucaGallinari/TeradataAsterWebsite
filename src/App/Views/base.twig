@@ -22,6 +22,9 @@
     <body>
 
         <header>
+            <ul id="dropdown1" class="dropdown-content">
+                <!--<li class="divider"></li>-->
+            </ul>
             <nav class="top-nav green">
                 <div class="container">
                     <div class="nav-wrapper">
@@ -29,8 +32,12 @@
                         <a href="#" data-activates="mobile-nav" class="button-collapse"><i class="material-icons">menu</i></a>
                         <ul class="right hide-on-med-and-down">
                             {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                                <li {% if page=="app" %}class="active"{% endif %}>
-                                    <a href="{{ path('app') }}">Panel</a>
+
+                                <li {% if page=="discover" %}class="active"{% endif %}>
+                                    <a href="{{ path('app') }}">Discover</a>
+                                </li>
+                                <li {% if page=="myevents" %}class="active"{% endif %}>
+                                    <a href="{{ path('myevents') }}">My Events</a>
                                 </li>
                                 <li><a href="{{ path('app_logout') }}">Logout</a></li>
                             {% else %}

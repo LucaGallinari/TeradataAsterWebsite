@@ -13,7 +13,7 @@
 {% block content %}
     <div class="row">
         <div class="col s12">
-            <h3 class="center-align page-title">App Panel</h3>
+            <h3 class="center-align page-title">Events Discovery Page</h3>
             {% if errors is defined %}
                 {% for e in errors %}
                     <p class="red-text">
@@ -29,6 +29,8 @@
                     </a>
                 </li>
             </ul>
+
+            <!-- List of Recommended Events-->
             <div class="row">
                 <h4>Recommended Events</h4>
                 <ul>
@@ -42,44 +44,46 @@
                     {% endif %}
                 </ul>
             </div>
+
+            <!-- Carousel of general Events-->
             <div class="row">
                 <h4>Events</h4>
                 <ul>
                     {% if events|length == 0 %}
                         <li>No events found</li>
                     {% else %}
-                        <div id="events" class="col m12 l8 offset-l2">
+                        <div id="events" class="col l12">
                             {%  for e in events %}
-                                <div class=" col s10">
-                                    <div class="card grey lighten-4">
+                                <div class=" col s12">
+                                    <div class="card grey lighten-4" data-type-actual="{{ e[1] }}">
                                         <div class="card-content black-text">
-                                            <span class="card-title orange-text">{{ e.getEventId }}</span>
-                                            <p>{{ e.getStartTime }}</p>
-                                            <p>{{ e.getCity }}, {{ e.getState }}</p>
-                                            <p>{{ e.getCountry }}, {{ e.getZip }}</p>
+                                            <span class="card-title orange-text">{{ e[0].getEventId }}</span>
+                                            <p>{{ e[0].getStartTime }}</p>
+                                            <p>{{ e[0].getCity }}, {{ e[0].getState }}</p>
+                                            <p>{{ e[0].getCountry }}, {{ e[0].getZip }}</p>
                                         </div>
                                         <div class="row">
 
                                             <!-- Not interested button -->
                                             <div class="col s4 card-operation">
-                                                <a href="#" class="tooltipped not-interested-event waves-effect waves-red btn-flat {% if e.interested is defined %}red-text{% endif %}"
-                                                   data-id="{{ e.getEventId }}"
+                                                <a href="#" class="tooltipped interest-op waves-effect waves-red btn-flat {% if e[1] == 0 %}red-text{% endif %}"
+                                                   data-id="{{ e[0].getEventId }}" data-type="0"
                                                    data-position="bottom" data-delay="50" data-tooltip="Not Interested">
                                                     <i class="material-icons">thumb_down</i>
                                                 </a>
                                             </div>
                                             <!-- Indifferent button -->
                                             <div class="col s4 card-operation">
-                                                <a href="#" class="tooltipped interested-event waves-effect waves-green btn-flat {% if e.indifferent is defined %}orange-text{% endif %}"
-                                                   data-id="{{ e.getEventId }}"
+                                                <a href="#" class="tooltipped interest-op waves-effect waves-green btn-flat {% if e[1] == 1 %}orange-text{% endif %}"
+                                                   data-id="{{ e[0].getEventId }}" data-type="1"
                                                    data-position="bottom" data-delay="50" data-tooltip="Indifferent">
                                                     <i class="material-icons">thumbs_up_down</i>
                                                 </a>
                                             </div>
                                             <!-- Interested button -->
                                             <div class="col s4 card-operation">
-                                                <a href="#" class="tooltipped interested-event waves-effect waves-green btn-flat {% if e.interested is defined %}green-text{% endif %}"
-                                                   data-id="{{ e.getEventId }}"
+                                                <a href="#" class="tooltipped interest-op waves-effect waves-green btn-flat {% if e[1] == 2 %}green-text{% endif %}"
+                                                   data-id="{{ e[0].getEventId }}" data-type="2"
                                                    data-position="bottom" data-delay="50" data-tooltip="Interested">
                                                     <i class="material-icons">thumb_up</i>
                                                 </a>
@@ -92,18 +96,6 @@
                         </div>
                     {% endif %}
 
-                </ul>
-            </div>
-            <div class="row">
-                <h4>Events of interest</h4>
-                <ul>
-                    {% if int_events|length == 0 %}
-                        <li>No events found</li>
-                    {% else %}
-                        {%  for e in int_events %}
-                            <li>{{ e.getEventId }}</li>
-                        {% endfor %}
-                    {% endif %}
                 </ul>
             </div>
         </div>
@@ -119,15 +111,28 @@
                 infinite: false,
                 centerMode: true,
                 centerPadding: '60px',
-                slidesToShow: 2,
+                slidesToShow: 3,
                 initialSlide: 1,
                 responsive: [
+
+                    {
+                        breakpoint: 1200,
+                        settings: {
+                            infinite: false,
+                            arrows: true,
+                            centerMode: true,
+                            centerPadding: '40px',
+                            slidesToShow: 2,
+                            initialSlide: 1
+                        }
+                    },
                     {
                         breakpoint: 768,
                         settings: {
                             infinite: false,
                             arrows: true,
-                            centerMode: false,
+                            centerMode: true,
+                            centerPadding: '40px',
                             slidesToShow: 1,
                             initialSlide: 0
                         }
@@ -138,47 +143,86 @@
             $('.tooltipped').tooltip({delay: 50});
 
             // ajax call to mark the event as interesting or not interesting
-            $('.interested-event').on('click', function() {
+            $('.interest-op').on('click', function() {
+                // initial checks
                 var id = $(this).attr('data-id');
                 if (id == '') {
                     Materialize.toast('Not valid ID for the event.', 3000);
                     return;
                 }
-                /*$clearCrono.hide();
-                var parentId = $clearCrono.parent();
-                $(parentId).append(preloader_wrapper('center'));*/
+                var type = $(this).attr('data-type');
+                if (type == '') {
+                    Materialize.toast('Not valid TYPE for the event.', 3000);
+                    return;
+                }
+
+                var $buttonsRow = $(this).parent().parent();
+                var $cardElement = $buttonsRow.parent();
+
+                var actual_type = $cardElement.attr('data-type-actual');
+                if (actual_type == '') {
+                    Materialize.toast('Not valid ACTUAL TYPE for the event.', 3000);
+                    return;
+                }
+
+                if (type == actual_type) {
+                    return;
+                    // do nothing
+                }
+
+                // hide buttons and append preloader
+                $buttonsRow.hide();
+                $cardElement.append(preloader_wrapper());
 
                 // do an ajax req
                 $.ajax({
                     type: "GET",
-                    url: '{{ path('event_interest_add') }}?type=2&id='+id
+                    url: '{{ path('events_interest_add') }}?type='+type+'&id='+id
                 })
                 .done(function( data ) {
                     data = data.toString();
                     if (data=="Ok") { // if everything's ok
-                        /*
-                        $('#listAnalysis').find('.collection-item').each(function() {
-                            $(this).fadeOut("normal", function() { $(this).remove();});
-                        });
-                        $('#noAnalysis').hide().removeClass('hide').show();*/
-                        Materialize.toast('Event inserted in your interesting!', 3000, 'rounded');
+                        // remove previous "highlight"
+                        $cardElement.find('.card-operation a').removeClass('red-text orange-text green-text');
+                        // and insert the correct one
+                        var $el = $cardElement.find('[data-type="'+type+'"]');
+                        switch (type) {
+                            case '0'://not int
+                                $el.addClass('red-text');
+                                break;
+                            case '1'://indiff
+                                $el.addClass('orange-text');
+                                break;
+                            case '2'://int
+                                $el.addClass('green-text');
+                                break;
+                        }
+                        $cardElement.attr('data-type-actual', type);
+                        Materialize.toast('Interest for the event modified!', 3000, 'rounded');
                     } else { // error
-                        // rollback
-                        /*$clearCrono.show();*/
                         // display error
-                        Materialize.toast('Error: '+data, 3000, 'rounded');
+                        console.log("ERROR: "+data);
+                        Materialize.toast('An erorr occured!', 3000, 'rounded');
                     }
-                    // $(parentId).find('.preloader-wrapper').remove();
+
+                    // show and remove
+                    $buttonsRow.show();
+                    $cardElement.find('.card-progress').remove();
                 })
                 .fail(function (data) {
                     data = data.toString();
-                    // rollback
-                    /*$clearCrono.show();
-                    $(parentId).find('.preloader-wrapper').remove();*/
+                    // show and remove
+                    $buttonsRow.show();
+                    $cardElement.find('.card-progress').remove();
                     // display error
-                    Materialize.toast('Error: '+data, 3000, 'rounded');
+                    console.log("ERROR: "+data);
+                    Materialize.toast('An erorr occured!', 3000, 'rounded');
                 });
             });
+
+            function preloader_wrapper () {
+                return '<div class="card-progress"><div class="progress"><div class="indeterminate"></div></div></div>';
+            }
         });
     </script>
 {% endblock %}

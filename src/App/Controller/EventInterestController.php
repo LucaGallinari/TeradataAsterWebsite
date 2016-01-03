@@ -58,7 +58,6 @@ class EventInterestController {
                 break;
         }
 
-
         /** @var $user User */
         $user = $app['security.token_storage']->getToken()->getUser();
         $userId = $user->getId();
@@ -66,8 +65,9 @@ class EventInterestController {
         /**@var $userIntProvider UserInterestProvider */
         $userIntProvider = new UserInterestProvider($app['odbc_aster']);
 
-
-        if ($userIntProvider->addUserInterest($userId, $eventId, $interested, $not_interested)) {
+        if ($userIntProvider->addUserInterest($userId, $eventId, $interested, $not_interested)) { // try to insert
+            return new Response('Ok', 200);
+        } else if ($userIntProvider->updateUserInterest($userId, $eventId, $interested, $not_interested)) { // try to update
             return new Response('Ok', 200);
         } else {
             return new Response('Could not add the event to interest', 404);

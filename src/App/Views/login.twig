@@ -8,18 +8,23 @@
 
     <div class="row">
         <div class="col s12 m8 l6 offset-m2 offset-l3">
+
+            {% if loginError is defined and loginError != ""  %}
+                <div class="row">
+                    <div class="col s12">
+                        <div class="card-panel red lighten-1 center white-text">
+                            <span>{{ loginError }}</span>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
             <h4 class="center-align page-title">Login</h4>
 
             <blockquote>
                 Login into the application or if you haven't registered yet,
                 please do it <a href="{{ path('signup') }}">here</a>
             </blockquote>
-
-            {% if loginError is defined and loginError != "" %}
-                <p class="red-text">
-                    Error: {{ loginError }}
-                </p>
-            {% endif %}
 
             <form action="{{ path('app_login_check') }}" method="post" class="col s12">
                 <div class="row">

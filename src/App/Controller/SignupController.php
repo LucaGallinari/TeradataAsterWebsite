@@ -45,20 +45,21 @@ class SignupController {
         if ($app['odbc_aster'] !== false) {
 
             if (!is_null($req->request->get('action'))) {
-                $username = isset($_POST['_username']) ? trim($_POST['_username']) : false;
+                $username = $req->request->get('_username', false);
 
-                if ($username !== false && $username != '') {
-                    $password = isset($_POST['_password']) ? $_POST['_password'] : false;
+                if ($username !== false) {
+                    $password = $req->request->get('_password', false);
 
-                    if ($password !== false && $password != '') {
-                        $password_check = isset($_POST['_password_check']) ? $_POST['_password_check'] : false;
+                    if ($password !== false) {
+                        $password_check = $req->request->get('_password_check', false);
 
                         if ($password_check !== false && $password_check == $password) {
                             /**@var $userProvider UserProvider */
                             $userProvider = new UserProvider($app['odbc_aster'], $app['security.encoder.digest']);
-                            //$userProvider = $app['security.firewalls']['app']['users'];
 
-                            if ($userProvider->signupUser($username, $password)) {
+                            $userid = uniqid(rand().'_');
+
+                            if ($userProvider->signupUser($userid, $username, $password)) {
                                 $message = 'The registration has ended successfully. Now you can login!';
 
                             } else {
