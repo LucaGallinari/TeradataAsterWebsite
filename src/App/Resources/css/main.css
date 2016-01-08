@@ -26,3 +26,83 @@ blockquote {
 .card-operation > a {
     display: inline-block;
 }
+
+/**
+ * TWEETS STYLE
+ */
+div.tweet {
+    font: normal normal 16px/1.4 Helvetica,Roboto,"Segoe UI",Calibri,sans-serif;
+    color: #1c2022;
+    overflow: hidden;
+    cursor: pointer;
+    background-color: #fff;
+    border: 1px solid #e1e8ed;
+    border-radius: 4px;
+    max-width: 520px;
+    padding: 1.25rem 1.25rem .725rem 1.25rem;
+    margin-bottom: 20px;
+    height:220px;
+}
+div.tweet .header {
+    display: table;
+}
+div.tweet .header .image {
+    display: table-cell;
+    vertical-align: middle;
+    width: 36px;
+    height: 36px;
+    overflow: hidden;
+    background-color: transparent;
+    border-radius: 4px;
+}
+
+div.tweet .header .image img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+div.tweet .header .name {
+    padding-left: 20px;
+    display: table-cell;
+    vertical-align: middle;
+    font-weight: bold;
+}
+div.tweet .date {
+    font-size: .875rem;
+    color: #697882;
+}
+
+
+
+div.twitter-tweet-rendered p.entry-title a.link {
+    font-family: Arial, sans-serif !important;
+    font-size: 14px !important;
+}
+
+div.twitter-tweet-rendered div.twt-border {
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+div.twitter-tweet-rendered iframe.twt-follow-button { display: none !important; }
+
+div.twitter-tweet-rendered div.footer ul.twt-actions {display: none !important;}
+
+div.twitter-tweet-rendered div.footer a.view-details {
+    display:block !important;
+    width: 120px !important;
+    margin: 5px 0 !important;
+    padding: 7px 0 !important;
+    background: #000 !important;
+    color: #fff !important;
+    text-decoration: none !important;
+    border-radius: 13px !important;
+    text-align: center !important;
+    box-shadow: -1px -1px 2px #555 !important;
+}
+
+div.twitter-tweet-rendered div.footer a.view-details span {
+    font: 14px Georgia, serif !important;
+    color: #fff !important;
+}

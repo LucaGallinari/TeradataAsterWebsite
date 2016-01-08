@@ -87,6 +87,7 @@ class EventProvider
         $tmp = new \ReflectionClass('App\\Model\\Event');
         foreach ($events as $key => $event) {
             try {
+                $event = $this->toArrayForCvalues($event);
                 $events[$key] = $tmp->newInstanceArgs($event);
             } catch(InvalidArgumentException $e) {
                 $events[$key] = null;
@@ -94,6 +95,47 @@ class EventProvider
         }
 
         return $events;
+    }
+
+    /**
+     * Load an event
+     *
+     * @param $eventid int
+     *
+     * @return array
+     */
+    public function getEventById($eventid)
+    {
+        $event = $this->db->getByEqualConditions(self::ENTITY_NAME, array('event_id' => $eventid));
+        if ($event === false) {
+            return false;
+        }
+
+        $event = $event[0];
+        $tmp = new \ReflectionClass('App\\Model\\Event');
+        $event = $this->toArrayForCvalues($event);
+        $event = $tmp->newInstanceArgs($event);
+
+        return $event;
+    }
+
+    /**
+     * @param $event array $event
+     * @return array
+     */
+    private function toArrayForCvalues($event) {
+        $cvalues = array();
+        // for cn
+        for ($i = 1; $i <= 100; ++$i) {
+            $cvalues[] = $event['c'.$i];
+            unset($event['c'.$i]);
+        }
+        // cother
+        $cvalues[] = $event['cother'];
+        unset($event['cother']);
+
+        $event[] = $cvalues;
+        return $event;
     }
 
 

@@ -2,7 +2,7 @@
 /**
  * index.php
  *
- * PHP version 5.5
+ * PHP version 5.6
  *
  * @category
  * @package  TeradataAsterWebsite
@@ -12,6 +12,7 @@
  */
 
 require_once __DIR__.'/../vendor/autoload.php';
+require_once __DIR__.'/../config.php';
 
 use Symfony\Component\Security\Core\Encoder\MessageDigestPasswordEncoder;
 use Silex\Provider;
@@ -23,6 +24,9 @@ $__PROJDIR__ = __DIR__."/../src";
 
 // options
 $app['debug'] = "true";
+
+// twitter config
+$app['twitter.config'] = $settings;
 
 $app->register(new Silex\Provider\SessionServiceProvider());
 $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
@@ -64,7 +68,7 @@ $app->register(new Provider\SecurityServiceProvider(), array(
         ),
     ),
     'security.access_rules' => array (
-        array('^/app/$', 'ROLE_USER', 'http')
+        array('^/app/', 'ROLE_USER', 'http')
     ),
     'security.encoder.digest' => $app->share(function() {
         // return new Symfony\Component\Security\Core\Encoder\BCryptPasswordEncoder(12);
@@ -89,12 +93,13 @@ $app->get('/', 'App\\Controller\\LoginController::indexAction')->bind('login');
 $app->get('/signup/', 'App\\Controller\\SignupController::indexAction')->bind('signup');
 $app->post('/signup/', 'App\\Controller\\SignupController::signupAction')->bind('signup_do');
 $app->get('/app/', 'App\\Controller\\AppController::indexAction')->bind('app');
-$app->get('/my-events/', 'App\\Controller\\EventController::indexAction')->bind('myevents');
-$app->post('/my-events/', 'App\\Controller\\EventController::addAction')->bind('myevents_add');
-$app->get('/my-events/del', 'App\\Controller\\EventController::delAction')->bind('myevents_del');
+$app->get('/app/my-events/', 'App\\Controller\\EventController::indexAction')->bind('myevents');
+$app->post('/app/my-events/', 'App\\Controller\\EventController::addAction')->bind('myevents_add');
+$app->get('/app/my-events/del', 'App\\Controller\\EventController::delAction')->bind('myevents_del');
+$app->get('/app/event/', 'App\\Controller\\EventController::viewAction')->bind('event');
 
 $app->get('/app/aster/test', 'App\\Controller\\AppController::testAsterConnectionAction')->bind('app_aster_test');
 
-$app->get('/events/interest/add/', 'App\\Controller\\EventInterestController::addAction')->bind('events_interest_add');
+$app->get('/app/events/interest/add/', 'App\\Controller\\EventInterestController::addAction')->bind('events_interest_add');
 
 $app->run();

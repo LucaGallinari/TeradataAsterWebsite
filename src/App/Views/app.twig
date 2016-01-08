@@ -38,7 +38,7 @@
                         <li>No events found</li>
                     {% else %}
                         {%  for e in rec_events %}
-
+                            <!-- TODO -->
                             <li>{{ rec_events.getEventId }}</li>
                         {% endfor %}
                     {% endif %}
@@ -57,7 +57,9 @@
                                 <div class=" col s12">
                                     <div class="card grey lighten-4" data-type-actual="{{ e[1] }}">
                                         <div class="card-content black-text">
-                                            <span class="card-title orange-text">{{ e[0].getEventId }}</span>
+                                            <span class="card-title orange-text">
+                                                <a href="{{ path('event') }}?eventid={{ e[0].getEventId }}">{{ e[0].getEventId }}</a>
+                                            </span>
                                             <p>{{ e[0].getStartTime }}</p>
                                             <p>{{ e[0].getCity }}, {{ e[0].getState }}</p>
                                             <p>{{ e[0].getCountry }}, {{ e[0].getZip }}</p>

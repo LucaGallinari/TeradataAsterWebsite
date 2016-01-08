@@ -1,0 +1,73 @@
+{% extends "base.twig" %}
+
+{% block head %}
+    <title>App Panel</title>
+{% endblock %}
+
+{% block endhead %}
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col s12">
+
+            <h4 class="center-align page-title">{{ event.getTitle }}</h4>
+
+            <blockquote>
+                {% if event.getDescription is defined and event.getDescription != "" %}
+                    {{ event.getDescription }}
+                {% else %}
+                    No description available.
+                {% endif %}
+            </blockquote>
+
+            <p>Date/Time: {{ event.getStartTime }}</p>
+            <p>{{ event.getCity }}, {{ event.getState }}, {{ event.getCountry }} ({{ event.getZip }})</p>
+
+            <!-- List of Tweets -->
+            <div class="row">
+                <br>
+                <ul>
+                    {% if tweets|length == 0 %}
+                        <li>No tweet found</li>
+                    {% else %}
+                        <li id="events" class="col l12">
+
+                            {%  for t in tweets %}
+                                <div class="col s12 m6 l4">
+                                    <div class="tweet">
+                                        <div class="header">
+                                            <span class="image"><img src="{{ t.getUserImage }}"></span>
+                                            <span class="name">{{ t.getUserName }}</span>
+                                        </div>
+                                        <div>
+                                            <p>{{ t.getContent }}</p>
+                                        </div>
+                                        <div>
+                                            &mdash;<span class="date">{{ t.getDate }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+
+                        </li>
+                    {% endif %}
+
+                </ul>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block endjs %}
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            // $('.tooltipped').tooltip({delay: 50});
+
+        });
+    </script>
+    <script src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+{% endblock %}

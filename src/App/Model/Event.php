@@ -30,6 +30,9 @@ class Event
     /** @var $c_arr array */
     protected $c_arr; // 100 c_num + c_other
 
+    protected $title;
+    protected $description;
+
     public function __construct(
         $event_id,
         $user_id,
@@ -38,6 +41,8 @@ class Event
         $state = '',
         $zip = '',
         $country = '',
+        $title = '',
+        $description = '',
         $c_arr = array()
     ) {
         if ($user_id == '' || is_null($user_id)) {
@@ -58,6 +63,8 @@ class Event
         $this->state        = $state;
         $this->zip          = $zip;
         $this->country      = $country;
+        $this->title         = $title;
+        $this->description  = $description;
         $this->c_arr        = $c_arr;
     }
 
@@ -69,7 +76,7 @@ class Event
     public function __toDBInsertString()
     {
         return sprintf(
-            "'%s', '%s', '%s', '%s', '%s', '%s', '%s', %s",
+            "'%s', '%s', '%s', '%s', '%s', '%s', '%s', %s, '%s', '%s'",
             $this->event_id,
             $this->user_id,
             $this->start_time,
@@ -77,7 +84,9 @@ class Event
             $this->state,
             $this->zip,
             $this->country,
-            implode(',', $this->c_arr)
+            implode(',', $this->c_arr),
+            $this->title,
+            $this->description
         );
     }
 
@@ -207,6 +216,38 @@ class Event
     public function getCArr()
     {
         return $this->c_arr;
+    }
+
+    /**
+     * @param string $description
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param mixed $title
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTitle()
+    {
+        return $this->title;
     }
 
 }
