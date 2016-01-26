@@ -35,7 +35,7 @@ class EventInterestController {
         $type = $req->get('type', null);
         $eventId = $req->get('id', null);
 
-        if (is_null($type) || is_null($eventId) || !is_numeric($type) || !is_numeric($eventId)) {
+        if (is_null($type) || is_null($eventId) || !is_numeric($type)) {
             return new Response('Wrong parameter', 404);
         }
         if ($app['odbc_aster'] === false) {

@@ -63,6 +63,7 @@ class UserInterestProvider
 
         foreach ($events as $key => $event) {
             try {
+                $events[$key] = EventProvider::toArrayForCvalues($events[$key]);
                 $events[$key] = $tmp->newInstanceArgs($events[$key]);
             } catch(InvalidArgumentException $e) {
                 $events[$key] = null;

@@ -30,7 +30,7 @@ class Event
     /** @var $c_arr array */
     protected $c_arr; // 100 c_num + c_other
 
-    protected $title;
+    protected $name;
     protected $description;
 
     public function __construct(
@@ -41,7 +41,7 @@ class Event
         $state = '',
         $zip = '',
         $country = '',
-        $title = '',
+        $name = '',
         $description = '',
         $c_arr = array()
     ) {
@@ -63,7 +63,7 @@ class Event
         $this->state        = $state;
         $this->zip          = $zip;
         $this->country      = $country;
-        $this->title         = $title;
+        $this->name         = $name;
         $this->description  = $description;
         $this->c_arr        = $c_arr;
     }
@@ -85,7 +85,7 @@ class Event
             $this->zip,
             $this->country,
             implode(',', $this->c_arr),
-            $this->title,
+            $this->name,
             $this->description
         );
     }
@@ -235,19 +235,19 @@ class Event
     }
 
     /**
-     * @param mixed $title
+     * @param mixed $name
      */
-    public function setTitle($title)
+    public function setName($name)
     {
-        $this->title = $title;
+        $this->name = $name;
     }
 
     /**
      * @return mixed
      */
-    public function getTitle()
+    public function getName()
     {
-        return $this->title;
+        return $this->name;
     }
 
 }

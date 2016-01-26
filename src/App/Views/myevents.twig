@@ -49,9 +49,9 @@
                                     <div class="card grey lighten-4">
                                         <div class="card-content black-text">
                                             <a href="{{ path('event') }}?eventid={{ e.getEventId }}">
-                                            {% if e.getTitle is defined and e.getTitle != "" %}
+                                            {% if e.getName is defined and e.getName != "" %}
                                                 <span class="card-title orange-text">
-                                                    {{ e.getTitle }}
+                                                    {{ e.getName }}
                                                 </span>
                                             {% else %}
                                                 <span class="card-title orange-text">

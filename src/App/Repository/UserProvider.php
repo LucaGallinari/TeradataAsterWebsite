@@ -64,10 +64,13 @@ class UserProvider implements UserProviderInterface {
         }
         $users = $this->db->getByEqualConditions(self::ENTITY_NAME, array('email' => $username));
 
+        if (!is_array($users) || (is_array($users) && empty($users))) {
+            throw new UsernameNotFoundException(sprintf('Email "%s" does not exist.', $username));
+        }
         // first and possibly only user
         $user = $users[0];
 
-        if ($user===false) {
+        if ($user === false) {
             throw new UsernameNotFoundException(sprintf('Email "%s" does not exist.', $username));
         }
 
@@ -88,6 +91,15 @@ class UserProvider implements UserProviderInterface {
         if (is_null($this->db)) {
             return false;
         }
+
+        $users = $this->db->getByEqualConditions(self::ENTITY_NAME, array('email' => $username));
+        if (is_array($users) && !empty($users)) {
+            $user = $users[0];
+            if ($user !== false) {
+                return false;
+            }
+        }
+
         $password = $this->encoder->encodePassword($password, '');
         $user = new User($userid, $username, $password);
 

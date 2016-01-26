@@ -56,6 +56,7 @@ class EventProvider
         $tmp = new \ReflectionClass('App\\Model\\Event');
         foreach ($events as $key => $event) {
             try {
+                $events[$key] = $this->toArrayForCvalues($events[$key]);
                 $events[$key] = $tmp->newInstanceArgs($events[$key]);
             } catch(InvalidArgumentException $e) {
                 $events[$key] = null;
@@ -123,7 +124,7 @@ class EventProvider
      * @param $event array $event
      * @return array
      */
-    private function toArrayForCvalues($event) {
+    final static public function toArrayForCvalues($event) {
         $cvalues = array();
         // for cn
         for ($i = 1; $i <= 100; ++$i) {
@@ -151,11 +152,13 @@ class EventProvider
      */
     public function getEventsWithInterests ($user_id, $num = 20, $offset = 0)
     {
+        $random = lcg_value();
         $query = "
         SELECT  e.*, ui.interested, ui.not_interested
         FROM    ".self::ENTITY_NAME." e LEFT JOIN user_interest ui ON (e.event_id = ui.event_id)
         WHERE   ui.user_id = '$user_id' OR ui.user_id IS NULL
-        ORDER BY e.event_id ASC LIMIT $num OFFSET $offset;";
+        AND     CAST(e.event_id as BIGINT) >= ".$random." * (SELECT CAST(MAX(event_id) as BIGINT) FROM events)
+        LIMIT $num OFFSET $offset;";
 
         $events = $this->db->executeQueryAndFetch($query);
         if ($events === false) {
@@ -189,6 +192,7 @@ class EventProvider
 
             // create new Event obj
             try {
+                $events[$key] = $this->toArrayForCvalues($events[$key]);
                 $events[$key][0] = $tmp->newInstanceArgs($events[$key]);
                 $events[$key][1] = $intval;
             } catch(InvalidArgumentException $e) {

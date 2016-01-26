@@ -37,11 +37,70 @@
                     {% if rec_events|length == 0 %}
                         <li>No events found</li>
                     {% else %}
-                        {%  for e in rec_events %}
-                            <!-- TODO -->
-                            <li>{{ rec_events.getEventId }}</li>
-                        {% endfor %}
+                        <li id="events_rec" class="col l12">
+
+                            {%  for e in rec_events %}
+                                <div class=" col s12 m6">
+                                    <div class="card blue lighten-4" data-type-actual="{{ e[1] }}">
+                                        <div class="card-content black-text">
+                                            <a href="{{ path('event') }}?eventid={{ e[0].getEventId }}">
+                                                {% if e[0].getName is defined and e[0].getName != "" %}
+                                                    <span class="card-title orange-text">
+                                                    {{ e[0].getName }}
+                                                    </span>
+                                                {% else %}
+                                                    <span class="card-title orange-text">
+                                                    {{ e[0].getEventId }}
+                                                    </span>
+                                                {% endif %}
+                                            </a>
+                                            <p>
+                                            <blockquote>
+                                                {% if e[0].getDescription is defined and e[0].getDescription != "" %}
+                                                    {{ e[0].getDescription }}
+                                                {% else %}
+                                                    No description available.
+                                                {% endif %}
+                                            </blockquote>
+                                            </p>
+                                            <p>Date/Time: {{ e[0].getStartTime }}</p>
+                                            <p>{{ e[0].getCity }}, {{ e[0].getState }}, {{ e[0].getCountry }} ({{ e[0].getZip }})</p>
+                                        </div>
+                                        <div class="row">
+
+                                            <!-- Not interested button -->
+                                            <div class="col s4 card-operation">
+                                                <a href="#" class="tooltipped interest-op waves-effect waves-red btn-flat {% if e[1] == 0 %}red-text{% endif %}"
+                                                   data-id="{{ e[0].getEventId }}" data-type="0"
+                                                   data-position="bottom" data-delay="50" data-tooltip="Not Interested">
+                                                    <i class="material-icons">thumb_down</i>
+                                                </a>
+                                            </div>
+                                            <!-- Indifferent button -->
+                                            <div class="col s4 card-operation">
+                                                <a href="#" class="tooltipped interest-op waves-effect waves-green btn-flat {% if e[1] == 1 %}orange-text{% endif %}"
+                                                   data-id="{{ e[0].getEventId }}" data-type="1"
+                                                   data-position="bottom" data-delay="50" data-tooltip="Indifferent">
+                                                    <i class="material-icons">thumbs_up_down</i>
+                                                </a>
+                                            </div>
+                                            <!-- Interested button -->
+                                            <div class="col s4 card-operation">
+                                                <a href="#" class="tooltipped interest-op waves-effect waves-green btn-flat {% if e[1] == 2 %}green-text{% endif %}"
+                                                   data-id="{{ e[0].getEventId }}" data-type="2"
+                                                   data-position="bottom" data-delay="50" data-tooltip="Interested">
+                                                    <i class="material-icons">thumb_up</i>
+                                                </a>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+
+                        </li>
                     {% endif %}
+
                 </ul>
             </div>
 
@@ -53,16 +112,35 @@
                         <li>No events found</li>
                     {% else %}
                         <div id="events" class="col l12">
+
                             {%  for e in events %}
-                                <div class=" col s12">
+                                <div class=" col s12 m6">
                                     <div class="card grey lighten-4" data-type-actual="{{ e[1] }}">
                                         <div class="card-content black-text">
-                                            <span class="card-title orange-text">
-                                                <a href="{{ path('event') }}?eventid={{ e[0].getEventId }}">{{ e[0].getEventId }}</a>
-                                            </span>
-                                            <p>{{ e[0].getStartTime }}</p>
-                                            <p>{{ e[0].getCity }}, {{ e[0].getState }}</p>
-                                            <p>{{ e[0].getCountry }}, {{ e[0].getZip }}</p>
+
+                                            <a href="{{ path('event') }}?eventid={{ e[0].getEventId }}">
+                                                {% if e[0].getName is defined and e[0].getName != "" %}
+                                                    <span class="card-title orange-text">
+                                                    {{ e[0].getName }}
+                                                    </span>
+                                                {% else %}
+                                                    <span class="card-title orange-text">
+                                                    {{ e[0].getEventId }}
+                                                    </span>
+                                                {% endif %}
+                                            </a>
+                                            <p>
+                                            <blockquote>
+                                                {% if e[0].getDescription is defined and e[0].getDescription != "" %}
+                                                    {{ e[0].getDescription }}
+                                                {% else %}
+                                                    No description available.
+                                                {% endif %}
+                                            </blockquote>
+                                            </p>
+                                            <p>Date/Time: {{ e[0].getStartTime }}</p>
+                                            <p>{{ e[0].getCity }}, {{ e[0].getState }}, {{ e[0].getCountry }} ({{ e[0].getZip }})</p>
+
                                         </div>
                                         <div class="row">
 
@@ -109,7 +187,8 @@
     <script type="text/javascript" src="{{ app.asset_path }}/libs/slick/slick.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function(){
-            $('#events').slick({
+            /*
+            $('#eventsa').slick({
                 infinite: false,
                 centerMode: true,
                 centerPadding: '60px',
@@ -141,7 +220,7 @@
                     }
                 ]
             });
-
+            */
             $('.tooltipped').tooltip({delay: 50});
 
             // ajax call to mark the event as interesting or not interesting
