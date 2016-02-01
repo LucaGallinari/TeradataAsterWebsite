@@ -39,7 +39,7 @@
                                 <li {% if page=="myevents" %}class="active"{% endif %}>
                                     <a href="{{ path('myevents') }}">My Events</a>
                                 </li>
-                                <li><a href="{{ path('app_logout') }}">Logout</a></li>
+                                <li><a href="{{ path('TeradataAsterWebsite_app_logout') }}">Logout</a></li>
                             {% else %}
                                 <li {% if page=="signup" %}class="active"{% endif %}>
                                     <a href="{{ path('signup') }}">Signup</a>
@@ -48,17 +48,15 @@
                                     <a href="{{ path('login') }}">Login</a>
                                 </li>
                             {% endif %}
-                            <li {% if page=="about" %}class="active"{% endif %}><a href="/about">About</a></li>
                         </ul>
                         <ul class="side-nav" id="mobile-nav">
                             {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                                <li><a href="{{ path('app_logout') }}">Logout</a></li>
+                                <li><a href="{{ path('TeradataAsterWebsite_app_logout') }}">Logout</a></li>
                             {% else %}
                                 <li {% if page=="login" %}class="active"{% endif %}>
                                     <a href="{{ path('login') }}">Login</a>
                                 </li>
                             {% endif %}
-                            <li {% if page=="about" %}class="active"{% endif %}><a href="/about">About</a></li>
                         </ul>
                     </div>
                 </div>

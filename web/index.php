@@ -20,10 +20,10 @@ use ODBC_Aster\Provider\ODBCAsterServiceProvider;
 use App\Repository\UserProvider;
 
 $app = new Silex\Application();
-$__PROJDIR__ = __DIR__."/../src";
 
 // options
 $app['debug'] = "true";
+$__PROJDIR__ = __DIR__."/../src";
 
 // twitter config
 $app['twitter.config'] = $settings;
@@ -47,15 +47,15 @@ $app->register(new ODBCASterServiceProvider(), array(
 $app->register(new Provider\SecurityServiceProvider(), array(
     'security.firewalls' => array(
         'app' => array(
-            'pattern' => '^/.*$',
+            'pattern' => '^'.$__BASEDIR__.'/.*$',
             'form' => array(
-                'login_path' => '/',
-                'check_path' => '/app/login_check',
-                'default_target_path' => '/app/',
+                'login_path' => $__BASEDIR__.'/',
+                'check_path' => $__BASEDIR__.'/app/login_check',
+                'default_target_path' => $__BASEDIR__.'/app/',
                 'always_use_default_target_path' => true
             ),
             'logout' => array(
-                'logout_path' => '/app/logout',
+                'logout_path' => $__BASEDIR__.'/app/logout',
                 'invalidate_session' => true
             ),
             'anonymous' => true,
@@ -68,7 +68,7 @@ $app->register(new Provider\SecurityServiceProvider(), array(
         ),
     ),
     'security.access_rules' => array (
-        array('^/app/', 'ROLE_USER', 'http')
+        array('^'.$__BASEDIR__.'/app/', 'ROLE_USER', 'http')
     ),
     'security.encoder.digest' => $app->share(function() {
         // return new Symfony\Component\Security\Core\Encoder\BCryptPasswordEncoder(12);
@@ -85,21 +85,21 @@ $app->register(new Provider\TwigServiceProvider(), array(
 ));
 
 // Assets
-$app['asset_path'] = '/src/App/Resources';
+$app['asset_path'] = $__BASEDIR__.'/src/App/Resources';
 
 
 // Routing
-$app->get('/', 'App\\Controller\\LoginController::indexAction')->bind('login');
-$app->get('/signup/', 'App\\Controller\\SignupController::indexAction')->bind('signup');
-$app->post('/signup/', 'App\\Controller\\SignupController::signupAction')->bind('signup_do');
-$app->get('/app/', 'App\\Controller\\AppController::indexAction')->bind('app');
-$app->get('/app/my-events/', 'App\\Controller\\EventController::indexAction')->bind('myevents');
-$app->post('/app/my-events/', 'App\\Controller\\EventController::addAction')->bind('myevents_add');
-$app->get('/app/my-events/del', 'App\\Controller\\EventController::delAction')->bind('myevents_del');
-$app->get('/app/event/', 'App\\Controller\\EventController::viewAction')->bind('event');
+$app->get($__BASEDIR__.'/', 'App\\Controller\\LoginController::indexAction')->bind('login');
+$app->get($__BASEDIR__.'/signup/', 'App\\Controller\\SignupController::indexAction')->bind('signup');
+$app->post($__BASEDIR__.'/signup/', 'App\\Controller\\SignupController::signupAction')->bind('signup_do');
+$app->get($__BASEDIR__.'/app/', 'App\\Controller\\AppController::indexAction')->bind('app');
+$app->get($__BASEDIR__.'/app/my-events/', 'App\\Controller\\EventController::indexAction')->bind('myevents');
+$app->post($__BASEDIR__.'/app/my-events/', 'App\\Controller\\EventController::addAction')->bind('myevents_add');
+$app->get($__BASEDIR__.'/app/my-events/del', 'App\\Controller\\EventController::delAction')->bind('myevents_del');
+$app->get($__BASEDIR__.'/app/event/', 'App\\Controller\\EventController::viewAction')->bind('event');
 
-$app->get('/app/aster/test', 'App\\Controller\\AppController::testAsterConnectionAction')->bind('app_aster_test');
+$app->get($__BASEDIR__.'/app/aster/test', 'App\\Controller\\AppController::testAsterConnectionAction')->bind('app_aster_test');
 
-$app->get('/app/events/interest/add/', 'App\\Controller\\EventInterestController::addAction')->bind('events_interest_add');
+$app->get($__BASEDIR__.'/app/events/interest/add/', 'App\\Controller\\EventInterestController::addAction')->bind('events_interest_add');
 
 $app->run();
