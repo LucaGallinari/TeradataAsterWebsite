@@ -5,9 +5,6 @@
 {% endblock %}
 
 {% block endhead %}
-    <!-- Slick -->
-    <link rel="stylesheet" type="text/css" href="{{ app.asset_path }}/libs/slick/slick.css"/>
-    <link rel="stylesheet" type="text/css" href="{{ app.asset_path }}/libs/slick/slick-theme.css"/>
 {% endblock %}
 
 {% block content %}
@@ -183,44 +180,8 @@
 {% endblock %}
 
 {% block endjs %}
-    <script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
-    <script type="text/javascript" src="{{ app.asset_path }}/libs/slick/slick.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function(){
-            /*
-            $('#eventsa').slick({
-                infinite: false,
-                centerMode: true,
-                centerPadding: '60px',
-                slidesToShow: 3,
-                initialSlide: 1,
-                responsive: [
-
-                    {
-                        breakpoint: 1200,
-                        settings: {
-                            infinite: false,
-                            arrows: true,
-                            centerMode: true,
-                            centerPadding: '40px',
-                            slidesToShow: 2,
-                            initialSlide: 1
-                        }
-                    },
-                    {
-                        breakpoint: 768,
-                        settings: {
-                            infinite: false,
-                            arrows: true,
-                            centerMode: true,
-                            centerPadding: '40px',
-                            slidesToShow: 1,
-                            initialSlide: 0
-                        }
-                    }
-                ]
-            });
-            */
             $('.tooltipped').tooltip({delay: 50});
 
             // ajax call to mark the event as interesting or not interesting

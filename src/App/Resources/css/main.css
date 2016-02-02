@@ -8,15 +8,6 @@ blockquote {
     border-left: 5px solid #fb8c00;
 }
 
-.slick-prev:before, .slick-next:before {
-    font-size: 40px;
-    color: #fb8c00;
-}
-.slick-prev, .slick-next {
-    width: 40px;
-    height: 40px;
-}
-
 .card-progress {
     padding: 5px 0;
 }

@@ -57,3 +57,4 @@ Simple PHP web application that uses the Teradata Aster Cluster via an ODBC conn
         composer install
 
 6. Rename the **config.sample.php** file to **config.php** and edit it at your needs.
+7. Setup is complete!
