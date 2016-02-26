@@ -37,7 +37,7 @@
                         <li id="events_rec" class="col l12">
 
                             {%  for e in rec_events %}
-                                <div class=" col s12 m6">
+                                <div class="col event">
                                     <div class="card blue lighten-4" data-type-actual="{{ e[1] }}">
                                         <div class="card-content black-text">
                                             <a href="{{ path('event') }}?eventid={{ e[0].getEventId }}">
@@ -111,7 +111,7 @@
                         <div id="events" class="col l12">
 
                             {%  for e in events %}
-                                <div class=" col s12 m6">
+                                <div class="col event">
                                     <div class="card grey lighten-4" data-type-actual="{{ e[1] }}">
                                         <div class="card-content black-text">
 

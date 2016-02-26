@@ -24,7 +24,7 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 class AppController {
 
-    const NUM_EVENTS_TO_RETRIEVE = 20;
+    const NUM_EVENTS_TO_RETRIEVE = 10;
 
     /**
      * @param Application $app

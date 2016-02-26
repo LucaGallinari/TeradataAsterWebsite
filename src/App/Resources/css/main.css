@@ -8,6 +8,10 @@ blockquote {
     border-left: 5px solid #fb8c00;
 }
 
+.event {
+    width:400px;
+}
+
 .card-progress {
     padding: 5px 0;
 }

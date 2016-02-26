@@ -1,0 +1,198 @@
+{% extends "base.twig" %}
+
+{% block head %}
+    <title>App Panel</title>
+{% endblock %}
+
+{% block endhead %}
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col s12">
+            <h3 class="center-align page-title">Events Search Page</h3>
+            {% if errors is defined %}
+                {% for e in errors %}
+                    <p class="red-text">
+                        Error: {{ e }}
+                    </p>
+                {% endfor %}
+            {% endif %}
+
+            <form action="{{ path('event_search') }}" method="get" class="col s12 m10 l8 offset-l2 offset-m1">
+                <div class="row">
+                    <div class="input-field col s8 m9 l10">
+                        <input name="keywords" id="keywords" type="text" required="required">
+                        <label for="keywords">Keywords</label>
+                    </div>
+                    <div class="col s4 m3 l2">
+                        <button class="btn waves-effect waves-light orange darken-1" type="submit" style="margin-top:15px;">
+                            Search<i class="material-icons right">search</i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- List of Searched Events-->
+            <div class="row">
+                <div id="events" class="col l12">
+                    {% if events|length == 0 %}
+                        <div>No events found</div>
+                    {% else %}
+
+                        {%  for e in events %}
+                            <div class="col event">
+                                <div class="card grey lighten-4" data-type-actual="{{ e[1] }}">
+                                    <div class="card-content black-text">
+                                        <a href="{{ path('event') }}?eventid={{ e[0].getEventId }}">
+                                            {% if e[0].getName is defined and e[0].getName != "" %}
+                                                <span class="card-title orange-text">
+                                                {{ e[0].getName }}
+                                                </span>
+                                            {% else %}
+                                                <span class="card-title orange-text">
+                                                {{ e[0].getEventId }}
+                                                </span>
+                                            {% endif %}
+                                        </a>
+                                        <p>
+                                        <blockquote>
+                                            {% if e[0].getDescription is defined and e[0].getDescription != "" %}
+                                                {{ e[0].getDescription }}
+                                            {% else %}
+                                                No description available.
+                                            {% endif %}
+                                        </blockquote>
+                                        </p>
+                                        <p>Date/Time: {{ e[0].getStartTime }}</p>
+                                        <p>{{ e[0].getCity }}, {{ e[0].getState }}, {{ e[0].getCountry }} ({{ e[0].getZip }})</p>
+                                    </div>
+                                    <div class="row">
+
+                                        <!-- Not interested button -->
+                                        <div class="col s4 card-operation">
+                                            <a href="#" class="tooltipped interest-op waves-effect waves-red btn-flat {% if e[1] == 0 %}red-text{% endif %}"
+                                               data-id="{{ e[0].getEventId }}" data-type="0"
+                                               data-position="bottom" data-delay="50" data-tooltip="Not Interested">
+                                                <i class="material-icons">thumb_down</i>
+                                            </a>
+                                        </div>
+                                        <!-- Indifferent button -->
+                                        <div class="col s4 card-operation">
+                                            <a href="#" class="tooltipped interest-op waves-effect waves-green btn-flat {% if e[1] == 1 %}orange-text{% endif %}"
+                                               data-id="{{ e[0].getEventId }}" data-type="1"
+                                               data-position="bottom" data-delay="50" data-tooltip="Indifferent">
+                                                <i class="material-icons">thumbs_up_down</i>
+                                            </a>
+                                        </div>
+                                        <!-- Interested button -->
+                                        <div class="col s4 card-operation">
+                                            <a href="#" class="tooltipped interest-op waves-effect waves-green btn-flat {% if e[1] == 2 %}green-text{% endif %}"
+                                               data-id="{{ e[0].getEventId }}" data-type="2"
+                                               data-position="bottom" data-delay="50" data-tooltip="Interested">
+                                                <i class="material-icons">thumb_up</i>
+                                            </a>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block endjs %}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('.tooltipped').tooltip({delay: 50});
+
+            // ajax call to mark the event as interesting or not interesting
+            $('.interest-op').on('click', function() {
+                // initial checks
+                var id = $(this).attr('data-id');
+                if (id == '') {
+                    Materialize.toast('Not valid ID for the event.', 3000);
+                    return;
+                }
+                var type = $(this).attr('data-type');
+                if (type == '') {
+                    Materialize.toast('Not valid TYPE for the event.', 3000);
+                    return;
+                }
+
+                var $buttonsRow = $(this).parent().parent();
+                var $cardElement = $buttonsRow.parent();
+
+                var actual_type = $cardElement.attr('data-type-actual');
+                if (actual_type == '') {
+                    Materialize.toast('Not valid ACTUAL TYPE for the event.', 3000);
+                    return;
+                }
+
+                if (type == actual_type) {
+                    return;
+                    // do nothing
+                }
+
+                // hide buttons and append preloader
+                $buttonsRow.hide();
+                $cardElement.append(preloader_wrapper());
+
+                // do an ajax req
+                $.ajax({
+                    type: "GET",
+                    url: '{{ path('events_interest_add') }}?type='+type+'&id='+id
+                })
+                .done(function( data ) {
+                    data = data.toString();
+                    if (data=="Ok") { // if everything's ok
+                        // remove previous "highlight"
+                        $cardElement.find('.card-operation a').removeClass('red-text orange-text green-text');
+                        // and insert the correct one
+                        var $el = $cardElement.find('[data-type="'+type+'"]');
+                        switch (type) {
+                            case '0'://not int
+                                $el.addClass('red-text');
+                                break;
+                            case '1'://indiff
+                                $el.addClass('orange-text');
+                                break;
+                            case '2'://int
+                                $el.addClass('green-text');
+                                break;
+                        }
+                        $cardElement.attr('data-type-actual', type);
+                        Materialize.toast('Interest for the event modified!', 3000, 'rounded');
+                    } else { // error
+                        // display error
+                        console.log("ERROR: "+data);
+                        Materialize.toast('An erorr occured!', 3000, 'rounded');
+                    }
+
+                    // show and remove
+                    $buttonsRow.show();
+                    $cardElement.find('.card-progress').remove();
+                })
+                .fail(function (data) {
+                    data = data.toString();
+                    // show and remove
+                    $buttonsRow.show();
+                    $cardElement.find('.card-progress').remove();
+                    // display error
+                    console.log("ERROR: "+data);
+                    Materialize.toast('An erorr occured!', 3000, 'rounded');
+                });
+            });
+
+            function preloader_wrapper () {
+                return '<div class="card-progress"><div class="progress"><div class="indeterminate"></div></div></div>';
+            }
+        });
+    </script>
+{% endblock %}

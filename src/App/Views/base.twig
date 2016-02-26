@@ -5,8 +5,9 @@
             <title>Teradata Aster Website</title>
         {% endblock %}
 
-        <!-- Import Google Icon Font -->
-        <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <!-- Import Google Icon Font
+        <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">-->
+        <link type="text/css" rel="stylesheet"  href="{{ app.asset_path }}/css/icon.css" rel="stylesheet">
         <!-- Import materialize.css -->
         <link type="text/css" rel="stylesheet" href="{{ app.asset_path }}/css/materialize.min.css"  media="screen,projection"/>
 
@@ -35,6 +36,9 @@
 
                                 <li {% if page=="discover" %}class="active"{% endif %}>
                                     <a href="{{ path('app') }}">Discover</a>
+                                </li>
+                                <li {% if page=="event_search" %}class="active"{% endif %}>
+                                    <a href="{{ path('event_search') }}">Search</a>
                                 </li>
                                 <li {% if page=="myevents" %}class="active"{% endif %}>
                                     <a href="{{ path('myevents') }}">My Events</a>

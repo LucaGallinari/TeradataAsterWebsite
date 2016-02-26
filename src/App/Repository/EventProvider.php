@@ -99,6 +99,73 @@ class EventProvider
     }
 
     /**
+     * Loads all the events of a given user.
+     *
+     * @param $user_id int
+     * @param $keywords string
+     *
+     * @return array of Event|null or empty array
+     */
+    public function getEventsByKeywordsWithInterest($user_id, $keywords)
+    {
+        $keyword_tokens = explode(' ', $keywords);
+
+        $keywords_sql = "(e.name LIKE'%";
+        $keywords_sql .= implode("%' OR e.name LIKE '%", $keyword_tokens) . "%'";
+        $keywords_sql .= " OR e.description LIKE'%";
+        $keywords_sql .= implode("%' OR e.description LIKE '%", $keyword_tokens) . "%'";
+        $keywords_sql .= ")";
+
+        $query = "
+        SELECT  e.*, ui.interested, ui.not_interested
+        FROM    ".self::ENTITY_NAME." e LEFT JOIN user_interest ui ON (e.event_id = ui.event_id)
+        WHERE   (ui.user_id = '$user_id' OR ui.user_id IS NULL)
+        AND     $keywords_sql;";
+
+        $events = $this->db->executeQueryAndFetch($query);
+        if ($events === false) {
+            return false;
+        }
+
+        // Retrieve all events as Event Object and set the interest field
+        $tmp = new \ReflectionClass('App\\Model\\Event');
+        foreach ($events as $key => $event) {
+
+            // calculate interests as single value
+            $int = -1;
+            $not_int = -1;
+            if (array_key_exists("interested", $event)) {
+                $int = $event['interested'];
+            }
+            if (array_key_exists("not_interested",$event)) {
+                $not_int = $event['not_interested'];
+            }
+            if ($int == -1 && $not_int == -1) {
+                $intval = -1;
+            } else if ($int == 0) {
+                if ($not_int == 0) {
+                    $intval = 1;
+                } else {
+                    $intval = 0;
+                }
+            } else {
+                $intval = 2;
+            }
+
+            // create new Event obj
+            try {
+                $events[$key] = $this->toArrayForCvalues($events[$key]);
+                $events[$key][0] = $tmp->newInstanceArgs($events[$key]);
+                $events[$key][1] = $intval;
+            } catch(InvalidArgumentException $e) {
+                $events[$key] = null;
+            }
+        }
+
+        return $events;
+    }
+
+    /**
      * Load an event
      *
      * @param $eventid int
@@ -150,7 +217,7 @@ class EventProvider
      *
      * @return array of couple of obj with 0=Event, 1=int
      */
-    public function getEventsWithInterests ($user_id, $num = 20, $offset = 0)
+    public function getEventsWithInterests ($user_id, $num = 10, $offset = 0)
     {
         $random = lcg_value();
         $query = "

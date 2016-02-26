@@ -36,7 +36,7 @@ $app->register(new Silex\Provider\ServiceControllerServiceProvider());
 $app->register(new ODBCASterServiceProvider(), array(
     'odbc_aster.configs' => array(
         'driver'   => '{AsterDriver}',
-        'host'     => '192.168.100.100',
+        'host'     => '192.168.1.200',
         'database' => 'beehive',
         'username' => 'db_superuser',
         'password' => 'db_superuser',
@@ -97,6 +97,7 @@ $app->get($__BASEDIR__.'/app/my-events/', 'App\\Controller\\EventController::ind
 $app->post($__BASEDIR__.'/app/my-events/', 'App\\Controller\\EventController::addAction')->bind('myevents_add');
 $app->get($__BASEDIR__.'/app/my-events/del', 'App\\Controller\\EventController::delAction')->bind('myevents_del');
 $app->get($__BASEDIR__.'/app/event/', 'App\\Controller\\EventController::viewAction')->bind('event');
+$app->get($__BASEDIR__.'/app/event/search', 'App\\Controller\\EventController::searchAction')->bind('event_search');
 
 $app->get($__BASEDIR__.'/app/aster/test', 'App\\Controller\\AppController::testAsterConnectionAction')->bind('app_aster_test');
 

@@ -166,12 +166,11 @@ class EventController {
                     $eventProvider = new EventProvider($app['odbc_aster']);
                     $eventid = uniqid(rand().'_');
                     $event = new Event($eventid, $userid, $startt, $city, $state, $zip, $country, $title, $descr);
-                    /*if ($eventProvider->addEvent($event)) {
+                    if ($eventProvider->addEvent($event)) {
                         $ok = true;
                     } else {
                         $error = 'The event is already present. Please change some values';
-                    }*/
-
+                    }
 
                     if ($hashtag != '') {
 
@@ -180,32 +179,36 @@ class EventController {
 
                         // get tweets with an API call
                         $twitterManager = new TwitterManager($app['twitter.config']);
-                        $tweets = $twitterManager->search($hashtag);
+                        try {
+                            $tweets = $twitterManager->search($hashtag);
 
-                        if (count($tweets) != 0) {
-                            $count = 0;
-                            // for each tweet
-                            foreach ($tweets as $tweet) {
-                                if ($count == 10) {
-                                    break;
+                            if (count($tweets) != 0) {
+                                $count = 0;
+                                // for each tweet
+                                foreach ($tweets as $tweet) {
+                                    if ($count == 10) {
+                                        break;
+                                    }
+                                    $id = $tweet["ID"];
+                                    $text = $tweet["TEXT"];
+                                    $date = $tweet["CREATED_AT"];
+                                    $userName = $tweet["USER_NAME"];
+                                    $userImage = $tweet["IMAGE_PROFILE"];
+                                    $url = $tweet["URL"];
+                                    $rc = $tweet["RTWEET_COUNT"];
+                                    $lang = $tweet["LANG"];
+
+                                    $tweet = new Tweet($id, $eventid, $text, $userName, $userImage, $url, $date, $lang, $rc);
+                                    if (!$tweetProvider->addTweet($tweet)) {
+                                        $error = 'Cannot add the tweet. Continue.';
+                                    };
+                                    ++$count;
                                 }
-                                $id = $tweet["ID"];
-                                $text = $tweet["TEXT"];
-                                $date = $tweet["CREATED_AT"];
-                                $userName = $tweet["USER_NAME"];
-                                $userImage = $tweet["IMAGE_PROFILE"];
-                                $url = $tweet["URL"];
-                                $rc = $tweet["RTWEET_COUNT"];
-                                $lang = $tweet["LANG"];
-
-                                $tweet = new Tweet($id, $eventid, $text, $userName, $userImage, $url, $date, $lang, $rc);
-                                if (!$tweetProvider->addTweet($tweet)) {
-                                    $error = 'Cannot add the tweet. Continue.';
-                                };
-                                ++$count;
+                            } else {
+                                $error = 'No tweet found for the given hashtag: '.$hashtag;
                             }
-                        } else {
-                            $error = 'No tweet found for the given hashtag: '.$hashtag;
+                        } catch (\Exception $e) {
+                            $error = 'Cannot retrieve tweets for this event: no connection available.';
                         }
                     }
                 } else {
@@ -263,5 +266,47 @@ class EventController {
         return $app->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
     }
 
+
+    /**
+     * @param Request $req
+     * @param Application $app
+     *
+     * @return string
+     */
+    public function searchAction(Request $req, Application $app)
+    {
+        $errors = array();
+        $events = array();
+        $message = '';
+
+
+        $keywords = $req->get('keywords', '');
+        if ($keywords !== '') {
+            /** @var $token TokenInterface */
+            $token = $app['security.token_storage']->getToken();
+            /** @var $user User */
+            $user = $token->getUser();
+
+            if ($app['odbc_aster'] !== false) {
+
+                // user events
+                $eventsProvider = new EventProvider($app['odbc_aster']);
+                $events = $eventsProvider->getEventsByKeywordsWithInterest($user->getId(), $keywords);
+                if ($events === false) {
+                    $errors[] = "Error while retrieving the events of the user! (Bad Query?)";
+                }
+
+            } else {
+                $errors[] = "Could not connect to the DB!";
+            }
+        }
+
+        return $app['twig']->render('event_search.twig', array (
+            'events'    => $events,
+            'message'   => $message,
+            'errors'    => $errors,
+            'page'      => 'event_search',
+        ));
+    }
 
 } 
